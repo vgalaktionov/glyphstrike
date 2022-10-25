@@ -5,6 +5,7 @@ go 1.19
 require github.com/gdamore/tcell/v2 v2.5.3
 
 require (
+	github.com/deckarep/golang-set/v2 v2.1.0
 	github.com/gdamore/encoding v1.0.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
