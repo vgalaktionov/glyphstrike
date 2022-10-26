@@ -22,29 +22,24 @@ func main() {
 	defer quit()
 
 	e.ECS.RegisterSystem(systems.PlayerInput)
-	e.ECS.RegisterSystem(systems.LeftWalker)
+	e.ECS.RegisterSystem(systems.RenderMap)
 	e.ECS.RegisterSystem(systems.Render)
+
+	mapX, mapY := e.Renderer.Size()
+
+	playerX := mapX / 2
+	playerY := mapY / 2
+
+	e.ECS.AddResource(systems.NewMap(mapX, mapY, playerX, playerY))
 
 	e.ECS.AddEntity(
 		components.Player{},
-		components.Position{X: 40, Y: 25},
+		components.Position{X: playerX, Y: playerY},
 		components.Renderable{
 			Glyph: '@',
 			Style: tcell.StyleDefault.Foreground(tcell.ColorYellow).Background(tcell.ColorBlack),
 		},
 	)
-
-	for i := 0; i < 10; i++ {
-		e.ECS.AddEntity(
-			components.LeftMover{},
-			components.Position{X: i * 7, Y: 20},
-			components.Renderable{
-				Glyph: '☺',
-				Style: tcell.StyleDefault.Foreground(tcell.ColorRed).Background(tcell.ColorBlack),
-			},
-		)
-
-	}
 
 	e.Run()
 }

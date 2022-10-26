@@ -4,24 +4,12 @@ import (
 	"os"
 
 	"github.com/gdamore/tcell/v2"
+	"github.com/vgalaktionov/roguelike-go/draw"
+	"github.com/vgalaktionov/roguelike-go/ecs"
 
 	//lint:ignore ST1001 dot importing components makes it much more readable in this case
 	. "github.com/vgalaktionov/roguelike-go/components"
-	"github.com/vgalaktionov/roguelike-go/draw"
-	"github.com/vgalaktionov/roguelike-go/ecs"
 )
-
-func LeftWalker(r draw.Renderer, w *ecs.World) {
-	for e := range w.QueryEntitiesIter(LeftMover{}, Position{}) {
-		pos := w.GetEntityComponent(PositionTag, e).(Position)
-		pos.X--
-		maxX, _ := r.Size()
-		if pos.X < 0 {
-			pos.X = maxX
-		}
-		w.SetEntityComponent(pos, e)
-	}
-}
 
 func PlayerInput(r draw.Renderer, w *ecs.World) {
 	event := r.PollEvent()
@@ -64,14 +52,4 @@ func PlayerInput(r draw.Renderer, w *ecs.World) {
 		w.SetEntityComponent(pos, e)
 	}
 
-}
-
-func Render(r draw.Renderer, w *ecs.World) {
-
-	for e := range w.QueryEntitiesIter(Renderable{}, Position{}) {
-		pos := w.GetEntityComponent(PositionTag, e).(Position)
-		renderable := w.GetEntityComponent(RenderableTag, e).(Renderable)
-
-		r.SetContent(pos.X, pos.Y, renderable.Glyph, nil, renderable.Style)
-	}
 }

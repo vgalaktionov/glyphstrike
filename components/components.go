@@ -33,11 +33,3 @@ const PlayerTag = ecs.CTag("Player")
 func (Player) CTag() ecs.CTag {
 	return PlayerTag
 }
-
-type LeftMover struct{}
-
-const LeftMoverTag = ecs.CTag("LeftMover")
-
-func (LeftMover) CTag() ecs.CTag {
-	return LeftMoverTag
-}
