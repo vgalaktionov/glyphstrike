@@ -13,17 +13,30 @@ type Component interface {
 	CTag() CTag
 }
 
+type RTag string
+
+type Resource interface {
+	RTag() RTag
+}
+
 type System func(draw.Renderer, *World)
 
 type World struct {
 	lastEntityID Entity
 	entities     set.Set[Entity]
-	components   map[CTag]map[Entity]*Component
+	components   map[CTag]map[Entity]Component
 	systems      []System
+	resources    map[RTag]Resource
 }
 
 func NewWorld() *World {
-	w := &World{0, set.NewSet[Entity](), make(map[CTag]map[Entity]*Component), nil}
+	w := &World{
+		0,
+		set.NewSet[Entity](),
+		make(map[CTag]map[Entity]Component),
+		nil,
+		make(map[RTag]Resource),
+	}
 	return w
 }
 
@@ -33,9 +46,9 @@ func (w *World) AddEntity(components ...Component) Entity {
 	for _, c := range components {
 		c := c
 		if w.components[c.CTag()] == nil {
-			w.components[c.CTag()] = make(map[Entity]*Component)
+			w.components[c.CTag()] = make(map[Entity]Component)
 		}
-		w.components[c.CTag()][w.lastEntityID] = &c
+		w.components[c.CTag()][w.lastEntityID] = c
 	}
 	return w.lastEntityID
 }
@@ -47,17 +60,25 @@ func (w *World) RemoveEntity(ent Entity) {
 	}
 }
 
+func (w *World) AddResource(r Resource) {
+	w.resources[r.RTag()] = r
+}
+
+func (w *World) GetResource(tag RTag) Resource {
+	return w.resources[tag]
+}
+
 func (w *World) RegisterSystem(s System) {
 	w.systems = append(w.systems, s)
 }
 
 func (w *World) GetEntityComponent(tag CTag, ent Entity) Component {
-	return *w.components[tag][ent]
+	return w.components[tag][ent]
 }
 
 // SetEntityComponent replaces the given component for an entity.
 func (w *World) SetEntityComponent(c Component, ent Entity) {
-	w.components[c.CTag()][ent] = &c
+	w.components[c.CTag()][ent] = c
 }
 
 // QueryEntitiesIter takes templates (empty components) and returns an iterable channel of entities with these components.
