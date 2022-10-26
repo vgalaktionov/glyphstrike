@@ -15,7 +15,7 @@ import (
 func PlayerInput(r draw.Renderer, w *ecs.World) {
 	event := r.PollEvent()
 	for e := range w.QueryEntitiesIter(Player{}, Position{}) {
-		playerPos := w.GetEntityComponent(Position{}.CTag(), e).(Position)
+		playerPos := w.GetEntityComponent(PositionTag, e).(Position)
 
 		switch ev := event.(type) {
 		case *tcell.EventResize:
@@ -46,7 +46,7 @@ func PlayerInput(r draw.Renderer, w *ecs.World) {
 
 			// Walls are solid
 			m := w.GetResource(resources.MapTag).(resources.Map)
-			if m[destX][destY] != resources.WallTile {
+			if m.Tiles[destX][destY] != resources.WallTile {
 				w.SetEntityComponent(Position{X: destX, Y: destY}, e)
 			}
 

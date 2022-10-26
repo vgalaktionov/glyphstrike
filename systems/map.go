@@ -13,8 +13,8 @@ import (
 
 func RenderMap(r draw.Renderer, w *ecs.World) {
 	m := w.GetResource(MapTag).(Map)
-	for x, row := range m {
-		for y, tile := range row {
+	for x, col := range m.Tiles {
+		for y, tile := range col {
 			// render tiles
 			switch tile {
 			case FloorTile:
@@ -26,31 +26,50 @@ func RenderMap(r draw.Renderer, w *ecs.World) {
 	}
 }
 
-func NewMap(mapWidth, mapHeight, playerX, playerY int) Map {
-	m := make(Map, mapWidth)
+func NewEmptyMap(mapWidth, mapHeight int) Map {
+	m := Map{Tiles: make([][]TileType, mapWidth), Width: mapWidth, Height: mapHeight}
 	for i := 0; i < mapWidth; i++ {
-		m[i] = make([]TileType, mapHeight)
+		m.Tiles[i] = make([]TileType, m.Height)
 	}
+	return m
+}
+
+func NewTestMap(mapWidth, mapHeight, playerX, playerY int) Map {
+	m := NewEmptyMap(mapWidth, mapHeight)
 
 	// Close off the sides with walls
 	for x := 0; x < mapWidth; x++ {
-		m[x][0] = WallTile
-		m[x][mapHeight-1] = WallTile
+		m.Tiles[x][0] = WallTile
+		m.Tiles[x][m.Height-1] = WallTile
 	}
 
 	for y := 0; y < mapHeight; y++ {
-		m[0][y] = WallTile
-		m[mapWidth-1][y] = WallTile
+		m.Tiles[0][y] = WallTile
+		m.Tiles[m.Width-1][y] = WallTile
 	}
 
 	// Random walls, avoiding the player
 	for i := 0; i < 800; i++ {
-		x := rand.Intn(mapWidth - 1)
-		y := rand.Intn(mapHeight - 1)
+		x := rand.Intn(m.Width - 1)
+		y := rand.Intn(m.Height - 1)
 		if !(x == playerX && y == playerY) {
-			m[x][y] = WallTile
+			m.Tiles[x][y] = WallTile
 		}
 	}
+
+	return m
+}
+
+func NewMapRoomsAndCorridors(mapWidth, mapHeight, playerX, playerY int) Map {
+	m := NewEmptyMap(mapWidth, mapHeight)
+	m.Fill(WallTile)
+
+	room1 := draw.NewRect(20, 15, 10, 15)
+	room2 := draw.NewRect(35, 15, 10, 15)
+
+	m.ApplyRoom(room1)
+	m.ApplyRoom(room2)
+	m.ApplyHorizontalTunnel(25, 40, 23)
 
 	return m
 }

@@ -30,7 +30,7 @@ func main() {
 	playerX := mapX / 2
 	playerY := mapY / 2
 
-	e.ECS.AddResource(systems.NewMap(mapX, mapY, playerX, playerY))
+	e.ECS.AddResource(systems.NewMapRoomsAndCorridors(mapX, mapY, playerX, playerY))
 
 	e.ECS.AddEntity(
 		components.Player{},

@@ -67,3 +67,19 @@ func DrawBox(r Renderer, x1, y1, x2, y2 int, style tcell.Style, text string) {
 }
 
 var DEFAULT_STYLE tcell.Style = tcell.StyleDefault.Background(tcell.ColorBlack).Foreground(tcell.ColorWhite)
+
+type Rect struct {
+	X1, X2, Y1, Y2 int
+}
+
+func NewRect(x, y, w, h int) Rect {
+	return Rect{x, y, x + w, y + h}
+}
+
+func (r *Rect) Intersect(other Rect) bool {
+	return r.X1 <= other.X2 && r.X2 >= other.X1 && r.Y1 <= other.Y2 && r.Y2 >= other.Y1
+}
+
+func (r *Rect) Center() (int, int) {
+	return (r.X1 + r.X2) / 2, (r.Y1 + r.Y2) / 2
+}
