@@ -4,6 +4,8 @@ go 1.19
 
 require github.com/gdamore/tcell/v2 v2.5.3
 
+require github.com/norendren/go-fov v1.0.1 // indirect
+
 require (
 	github.com/deckarep/golang-set/v2 v2.1.0
 	github.com/gdamore/encoding v1.0.0 // indirect

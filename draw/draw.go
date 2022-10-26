@@ -66,7 +66,7 @@ func DrawBox(r Renderer, x1, y1, x2, y2 int, style tcell.Style, text string) {
 	DrawStr(r, x1+1, y1+1, style, text)
 }
 
-var DEFAULT_STYLE tcell.Style = tcell.StyleDefault.Background(tcell.ColorBlack).Foreground(tcell.ColorWhite)
+var DEFAULT_STYLE tcell.Style = tcell.StyleDefault.Background(tcell.ColorBlack.TrueColor()).Foreground(tcell.ColorWhite.TrueColor())
 
 type Rect struct {
 	X1, X2, Y1, Y2 int

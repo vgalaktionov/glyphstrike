@@ -15,16 +15,18 @@ const (
 )
 
 type Map struct {
-	Tiles  [][]TileType
-	Width  int
-	Height int
+	Tiles         [][]TileType
+	Width         int
+	Height        int
+	Rooms         []draw.Rect
+	RevealedTiles [][]bool
 }
 
-func (m *Map) InBounds(x, y int) bool {
+func (m Map) InBounds(x, y int) bool {
 	return x >= 0 && x < m.Width && y >= 0 && y < m.Height
 }
 
-func (m *Map) IsOpaque(x, y int) bool {
+func (m Map) IsOpaque(x, y int) bool {
 	return m.Tiles[x][y] == WallTile
 }
 

@@ -2,6 +2,7 @@ package components
 
 import (
 	"github.com/gdamore/tcell/v2"
+	"github.com/norendren/go-fov/fov"
 	"github.com/vgalaktionov/roguelike-go/ecs"
 )
 
@@ -32,4 +33,15 @@ const PlayerTag = ecs.CTag("Player")
 
 func (Player) CTag() ecs.CTag {
 	return PlayerTag
+}
+
+type Viewshed struct {
+	Radius int
+	View   *fov.View
+}
+
+const ViewshedTag = ecs.CTag("Viewshed")
+
+func (Viewshed) CTag() ecs.CTag {
+	return ViewshedTag
 }

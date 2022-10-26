@@ -2,6 +2,8 @@ package engine
 
 import (
 	"log"
+	"math/rand"
+	"time"
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/gdamore/tcell/v2/encoding"
@@ -15,6 +17,7 @@ type Engine struct {
 }
 
 func NewEngine() *Engine {
+	rand.Seed(time.Now().UnixNano())
 	encoding.Register()
 	// Initialize screen
 	screen, err := tcell.NewScreen()

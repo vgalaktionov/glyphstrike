@@ -33,15 +33,19 @@ func PlayerInput(r draw.Renderer, w *ecs.World) {
 
 			switch true {
 			case tcell.KeyLeft == ev.Key():
+				fallthrough
 			case tcell.KeyRune == ev.Key() && ev.Rune() == 'h':
 				deltaX--
 			case tcell.KeyRight == ev.Key():
+				fallthrough
 			case tcell.KeyRune == ev.Key() && ev.Rune() == 'l':
 				deltaX++
 			case tcell.KeyUp == ev.Key():
+				fallthrough
 			case tcell.KeyRune == ev.Key() && ev.Rune() == 'k':
 				deltaY--
 			case tcell.KeyDown == ev.Key():
+				fallthrough
 			case tcell.KeyRune == ev.Key() && ev.Rune() == 'j':
 				deltaY++
 			}
@@ -51,7 +55,7 @@ func PlayerInput(r draw.Renderer, w *ecs.World) {
 
 			// Walls are solid
 			m := w.GetResource(resources.MapTag).(*resources.Map)
-			if m.Tiles[destX][destY] != resources.WallTile {
+			if !m.IsOpaque(destX, destY) {
 				w.SetEntityComponent(Position{X: destX, Y: destY}, e)
 			}
 
