@@ -25,9 +25,9 @@ func RenderMap(r draw.Renderer, w *ecs.World) {
 					if m.RevealedTiles[x][y] {
 						switch tile {
 						case FloorTile:
-							r.SetContent(x, y, '.', nil, tcell.StyleDefault.Foreground(tcell.ColorDarkGray.TrueColor()))
+							r.SetContent(x, y, ' ', nil, tcell.StyleDefault.Background(tcell.NewRGBColor(20, 20, 20)))
 						case WallTile:
-							r.SetContent(x, y, '#', nil, tcell.StyleDefault.Foreground(tcell.ColorDarkGray.TrueColor()))
+							r.SetContent(x, y, '█', nil, tcell.StyleDefault.Foreground(tcell.NewRGBColor(50, 50, 50).TrueColor()))
 						}
 					}
 					continue inner
@@ -37,9 +37,9 @@ func RenderMap(r draw.Renderer, w *ecs.World) {
 
 				switch tile {
 				case FloorTile:
-					r.SetContent(x, y, '.', nil, tcell.StyleDefault.Foreground(tcell.ColorLightGray.TrueColor()).Bold(true))
+					r.SetContent(x, y, ' ', nil, tcell.StyleDefault.Foreground(tcell.ColorLightGray.TrueColor()).Bold(true))
 				case WallTile:
-					r.SetContent(x, y, '#', nil, tcell.StyleDefault.Foreground(tcell.ColorDarkGreen.TrueColor()).Bold(true))
+					r.SetContent(x, y, '█', nil, tcell.StyleDefault.Foreground(tcell.ColorDarkGreen.TrueColor()).Bold(true))
 				}
 			}
 		}
@@ -55,7 +55,7 @@ func NewEmptyMap(mapWidth, mapHeight int) *Map {
 	return m
 }
 
-func NewTestMap(mapWidth, mapHeight, playerX, playerY int) *Map {
+func NewTestMap(mapWidth, mapHeight int) *Map {
 	m := NewEmptyMap(mapWidth, mapHeight)
 
 	// Close off the sides with walls
@@ -73,10 +73,11 @@ func NewTestMap(mapWidth, mapHeight, playerX, playerY int) *Map {
 	for i := 0; i < 800; i++ {
 		x := rand.Intn(m.Width - 1)
 		y := rand.Intn(m.Height - 1)
-		if !(x == playerX && y == playerY) {
-			m.Tiles[x][y] = WallTile
-		}
+		m.Tiles[x][y] = WallTile
+
 	}
+
+	m.Rooms[0] = draw.NewRect(0, 0, m.Width, m.Height)
 
 	return m
 }

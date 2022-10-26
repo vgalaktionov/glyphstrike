@@ -14,7 +14,7 @@ func main() {
 	quit := func() {
 		maybePanic := recover()
 		e.Renderer.Clear()
-		e.Renderer.ShowCursor(0, 5)
+		e.Renderer.ShowCursor(0, 0)
 		e.Renderer.Fini()
 		if maybePanic != nil {
 			panic(maybePanic)
@@ -30,16 +30,16 @@ func main() {
 	mapX, mapY := e.Renderer.Size()
 
 	m := systems.NewMapRoomsAndCorridors(mapX, mapY)
+	// m := systems.NewTestMap(mapX, mapY)
 	e.ECS.AddResource(m)
-	// e.ECS.AddResource(systems.NewTestMap(mapX, mapY, mapX / 2, mapY / 2))
 
 	playerX, playerY := m.Rooms[0].Center()
 	e.ECS.AddEntity(
 		components.Player{},
 		components.Position{X: playerX, Y: playerY},
 		components.Renderable{
-			Glyph: '@',
-			Style: tcell.StyleDefault.Foreground(tcell.ColorYellow).Background(tcell.ColorBlack),
+			Glyph: '⊛',
+			Style: tcell.StyleDefault.Foreground(tcell.ColorYellow.TrueColor()).Background(tcell.ColorBlack.TrueColor()),
 		},
 		components.Viewshed{Radius: 8, View: fov.New()},
 	)

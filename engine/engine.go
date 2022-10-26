@@ -29,7 +29,6 @@ func NewEngine() *Engine {
 	}
 	screen.SetStyle(draw.DEFAULT_STYLE)
 	screen.EnableMouse()
-	screen.EnablePaste()
 	screen.Clear()
 
 	world := ecs.NewWorld()
