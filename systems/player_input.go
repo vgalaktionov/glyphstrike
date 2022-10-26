@@ -6,6 +6,7 @@ import (
 	"github.com/gdamore/tcell/v2"
 	"github.com/vgalaktionov/roguelike-go/draw"
 	"github.com/vgalaktionov/roguelike-go/ecs"
+	"github.com/vgalaktionov/roguelike-go/resources"
 
 	//lint:ignore ST1001 dot importing components makes it much more readable in this case
 	. "github.com/vgalaktionov/roguelike-go/components"
@@ -14,7 +15,7 @@ import (
 func PlayerInput(r draw.Renderer, w *ecs.World) {
 	event := r.PollEvent()
 	for e := range w.QueryEntitiesIter(Player{}, Position{}) {
-		pos := w.GetEntityComponent(Position{}.CTag(), e).(Position)
+		playerPos := w.GetEntityComponent(Position{}.CTag(), e).(Position)
 
 		switch ev := event.(type) {
 		case *tcell.EventResize:
@@ -28,15 +29,25 @@ func PlayerInput(r draw.Renderer, w *ecs.World) {
 				os.Exit(0)
 			}
 
+			var deltaX, deltaY int
 			switch ev.Key() {
 			case tcell.KeyLeft:
-				pos.X--
+				deltaX--
 			case tcell.KeyRight:
-				pos.X++
+				deltaX++
 			case tcell.KeyUp:
-				pos.Y--
+				deltaY--
 			case tcell.KeyDown:
-				pos.Y++
+				deltaY++
+			}
+
+			destX := playerPos.X + deltaX
+			destY := playerPos.Y + deltaY
+
+			// Walls are solid
+			m := w.GetResource(resources.MapTag).(resources.Map)
+			if m[destX][destY] != resources.WallTile {
+				w.SetEntityComponent(Position{X: destX, Y: destY}, e)
 			}
 
 		case *tcell.EventMouse:
@@ -49,7 +60,6 @@ func PlayerInput(r draw.Renderer, w *ecs.World) {
 			// 	}
 			// }
 		}
-		w.SetEntityComponent(pos, e)
 	}
 
 }
