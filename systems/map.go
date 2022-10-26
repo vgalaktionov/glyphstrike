@@ -12,7 +12,7 @@ import (
 )
 
 func RenderMap(r draw.Renderer, w *ecs.World) {
-	m := w.GetResource(MapTag).(Map)
+	m := w.GetResource(MapTag).(*Map)
 	for x, col := range m.Tiles {
 		for y, tile := range col {
 			// render tiles
@@ -26,15 +26,15 @@ func RenderMap(r draw.Renderer, w *ecs.World) {
 	}
 }
 
-func NewEmptyMap(mapWidth, mapHeight int) Map {
-	m := Map{Tiles: make([][]TileType, mapWidth), Width: mapWidth, Height: mapHeight}
+func NewEmptyMap(mapWidth, mapHeight int) *Map {
+	m := &Map{Tiles: make([][]TileType, mapWidth), Width: mapWidth, Height: mapHeight}
 	for i := 0; i < mapWidth; i++ {
 		m.Tiles[i] = make([]TileType, m.Height)
 	}
 	return m
 }
 
-func NewTestMap(mapWidth, mapHeight, playerX, playerY int) Map {
+func NewTestMap(mapWidth, mapHeight, playerX, playerY int) *Map {
 	m := NewEmptyMap(mapWidth, mapHeight)
 
 	// Close off the sides with walls
@@ -60,16 +60,16 @@ func NewTestMap(mapWidth, mapHeight, playerX, playerY int) Map {
 	return m
 }
 
-func NewMapRoomsAndCorridors(mapWidth, mapHeight, playerX, playerY int) Map {
+func NewMapRoomsAndCorridors(mapWidth, mapHeight, playerX, playerY int) *Map {
 	m := NewEmptyMap(mapWidth, mapHeight)
 	m.Fill(WallTile)
 
 	room1 := draw.NewRect(20, 15, 10, 15)
-	room2 := draw.NewRect(35, 15, 10, 15)
+	room2 := draw.NewRect(65, 5, 20, 25)
 
 	m.ApplyRoom(room1)
 	m.ApplyRoom(room2)
-	m.ApplyHorizontalTunnel(25, 40, 23)
+	m.ApplyHorizontalTunnel(25, 75, 20)
 
 	return m
 }

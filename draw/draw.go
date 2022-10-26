@@ -73,7 +73,7 @@ type Rect struct {
 }
 
 func NewRect(x, y, w, h int) Rect {
-	return Rect{x, y, x + w, y + h}
+	return Rect{x, x + w, y, y + h}
 }
 
 func (r *Rect) Intersect(other Rect) bool {

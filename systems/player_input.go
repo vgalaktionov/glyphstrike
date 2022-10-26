@@ -45,7 +45,7 @@ func PlayerInput(r draw.Renderer, w *ecs.World) {
 			destY := playerPos.Y + deltaY
 
 			// Walls are solid
-			m := w.GetResource(resources.MapTag).(resources.Map)
+			m := w.GetResource(resources.MapTag).(*resources.Map)
 			if m.Tiles[destX][destY] != resources.WallTile {
 				w.SetEntityComponent(Position{X: destX, Y: destY}, e)
 			}

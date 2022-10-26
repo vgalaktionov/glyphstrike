@@ -38,14 +38,19 @@ func (m *Map) Fill(tt TileType) {
 
 func (m *Map) ApplyRoom(room draw.Rect) {
 	for y := room.Y1 + 1; y <= room.Y2; y++ {
+		y := y
 		for x := room.X1 + 1; x <= room.X2; x++ {
-			m.Tiles[x][y] = FloorTile
+			x := x
+			if m.InBounds(x, y) {
+				m.Tiles[x][y] = FloorTile
+			}
 		}
 	}
 }
 
 func (m *Map) ApplyHorizontalTunnel(x1, x2, y int) {
-	for x := int(math.Min(float64(x1), float64(x2))); y <= int(math.Max(float64(x1), float64(x2))); x++ {
+	for x := int(math.Min(float64(x1), float64(x2))); x <= int(math.Max(float64(x1), float64(x2))); x++ {
+		x := x
 		if m.InBounds(x, y) {
 			m.Tiles[x][y] = FloorTile
 		}
@@ -54,6 +59,7 @@ func (m *Map) ApplyHorizontalTunnel(x1, x2, y int) {
 
 func (m *Map) ApplyVerticalTunnel(y1, y2, x int) {
 	for y := int(math.Min(float64(y1), float64(y2))); y <= int(math.Max(float64(y1), float64(y2))); y++ {
+		y := y
 		if m.InBounds(x, y) {
 			m.Tiles[x][y] = FloorTile
 		}

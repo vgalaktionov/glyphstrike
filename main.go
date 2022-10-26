@@ -13,7 +13,7 @@ func main() {
 	quit := func() {
 		maybePanic := recover()
 		e.Renderer.Clear()
-		e.Renderer.ShowCursor(0, 0)
+		e.Renderer.ShowCursor(0, 5)
 		e.Renderer.Fini()
 		if maybePanic != nil {
 			panic(maybePanic)
@@ -31,6 +31,7 @@ func main() {
 	playerY := mapY / 2
 
 	e.ECS.AddResource(systems.NewMapRoomsAndCorridors(mapX, mapY, playerX, playerY))
+	// e.ECS.AddResource(systems.NewTestMap(mapX, mapY, playerX, playerY))
 
 	e.ECS.AddEntity(
 		components.Player{},
