@@ -30,14 +30,19 @@ func PlayerInput(r draw.Renderer, w *ecs.World) {
 			}
 
 			var deltaX, deltaY int
-			switch ev.Key() {
-			case tcell.KeyLeft:
+
+			switch true {
+			case tcell.KeyLeft == ev.Key():
+			case tcell.KeyRune == ev.Key() && ev.Rune() == 'h':
 				deltaX--
-			case tcell.KeyRight:
+			case tcell.KeyRight == ev.Key():
+			case tcell.KeyRune == ev.Key() && ev.Rune() == 'l':
 				deltaX++
-			case tcell.KeyUp:
+			case tcell.KeyUp == ev.Key():
+			case tcell.KeyRune == ev.Key() && ev.Rune() == 'k':
 				deltaY--
-			case tcell.KeyDown:
+			case tcell.KeyDown == ev.Key():
+			case tcell.KeyRune == ev.Key() && ev.Rune() == 'j':
 				deltaY++
 			}
 

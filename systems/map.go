@@ -60,16 +60,47 @@ func NewTestMap(mapWidth, mapHeight, playerX, playerY int) *Map {
 	return m
 }
 
-func NewMapRoomsAndCorridors(mapWidth, mapHeight, playerX, playerY int) *Map {
+func NewMapRoomsAndCorridors(mapWidth, mapHeight int) (*Map, []draw.Rect) {
 	m := NewEmptyMap(mapWidth, mapHeight)
 	m.Fill(WallTile)
 
-	room1 := draw.NewRect(20, 15, 10, 15)
-	room2 := draw.NewRect(65, 5, 20, 25)
+	rooms := []draw.Rect{}
+	maxRooms := 30
+	minSize := 6
+	maxSize := 20
 
-	m.ApplyRoom(room1)
-	m.ApplyRoom(room2)
-	m.ApplyHorizontalTunnel(25, 75, 20)
+	for i := 0; i < maxRooms; i++ {
+		w := rand.Intn(maxSize-minSize) + minSize
+		h := rand.Intn(maxSize-minSize) + minSize
+		x := rand.Intn(m.Width - w - 1)
+		y := rand.Intn(m.Height - h - 1)
 
-	return m
+		room := draw.NewRect(x, y, w, h)
+		ok := true
+		for _, otherRoom := range rooms {
+			if room.Intersect(otherRoom) {
+				ok = false
+				break
+			}
+		}
+		if ok {
+			m.ApplyRoom(room)
+
+			if len(rooms) > 0 {
+				newX, newY := room.Center()
+				prevX, prevY := rooms[len(rooms)-1].Center()
+				if rand.Intn(2) == 1 {
+					m.ApplyHorizontalTunnel(prevX, newY, prevY)
+					m.ApplyVerticalTunnel(prevY, newY, newX)
+				} else {
+					m.ApplyVerticalTunnel(prevY, newY, prevX)
+					m.ApplyHorizontalTunnel(prevX, newX, newY)
+				}
+			}
+			rooms = append(rooms, room)
+		}
+
+	}
+
+	return m, rooms
 }

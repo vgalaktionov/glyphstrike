@@ -27,12 +27,11 @@ func main() {
 
 	mapX, mapY := e.Renderer.Size()
 
-	playerX := mapX / 2
-	playerY := mapY / 2
+	m, rooms := systems.NewMapRoomsAndCorridors(mapX, mapY)
+	e.ECS.AddResource(m)
+	// e.ECS.AddResource(systems.NewTestMap(mapX, mapY, mapX / 2, mapY / 2))
 
-	e.ECS.AddResource(systems.NewMapRoomsAndCorridors(mapX, mapY, playerX, playerY))
-	// e.ECS.AddResource(systems.NewTestMap(mapX, mapY, playerX, playerY))
-
+	playerX, playerY := rooms[0].Center()
 	e.ECS.AddEntity(
 		components.Player{},
 		components.Position{X: playerX, Y: playerY},
