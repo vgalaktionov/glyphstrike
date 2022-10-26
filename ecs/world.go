@@ -81,6 +81,29 @@ func (w *World) SetEntityComponent(c Component, ent Entity) {
 	w.components[c.CTag()][ent] = c
 }
 
+const EntityNotFound = Entity(-1)
+
+// QueryEntitiesSingle takes templates (empty components) and returns the first entity with these components, or -1.
+func (w *World) QueryEntitiesSingle(templates ...Component) Entity {
+
+	for e := range w.entities.Iter() {
+		e := e
+		hasAll := true
+	inner:
+		for _, t := range templates {
+			t := t
+			_, hasAll = w.components[t.CTag()][e]
+			if !hasAll {
+				break inner
+			}
+		}
+		if hasAll {
+			return e
+		}
+	}
+	return EntityNotFound
+}
+
 // QueryEntitiesIter takes templates (empty components) and returns an iterable channel of entities with these components.
 func (w *World) QueryEntitiesIter(templates ...Component) chan Entity {
 	ch := make(chan Entity)

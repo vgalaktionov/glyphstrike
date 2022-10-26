@@ -44,5 +44,14 @@ func main() {
 		components.Viewshed{Radius: 8, View: fov.New()},
 	)
 
+	for i := 1; i < len(m.Rooms); i++ {
+		x, y := m.Rooms[i].Center()
+		e.ECS.AddEntity(
+			components.Position{X: x, Y: y},
+			components.Renderable{Glyph: 'g', Style: tcell.StyleDefault.Foreground(tcell.ColorRed.TrueColor())},
+			components.Viewshed{Radius: 8, View: fov.New()},
+		)
+	}
+
 	e.Run()
 }
