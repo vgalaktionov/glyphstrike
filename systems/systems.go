@@ -5,80 +5,73 @@ import (
 
 	"github.com/gdamore/tcell/v2"
 
-	//lint:ignore ST1001 sheesh
+	//lint:ignore ST1001 dot importing components makes it much more readable in this case
 	. "github.com/vgalaktionov/roguelike-go/components"
 	"github.com/vgalaktionov/roguelike-go/draw"
 	"github.com/vgalaktionov/roguelike-go/ecs"
 )
 
-type LeftWalker struct{}
-
-func (LeftWalker) Query() []ecs.Tag {
-	return []ecs.Tag{Position{}.ComponentTag(), LeftMover{}.ComponentTag()}
-}
-
-func (LeftWalker) Process(s tcell.Screen, components ...*ecs.Component) {
-	pos := (*components[0]).(Position)
-	pos.X--
-	maxX, _ := s.Size()
-	if pos.X > maxX {
-		pos.X = 0
+func LeftWalker(r draw.Renderer, w *ecs.World) {
+	for e := range w.QueryEntitiesIter(LeftMover{}, Position{}) {
+		pos := w.GetEntityComponent(PositionTag, e).(Position)
+		pos.X--
+		maxX, _ := r.Size()
+		if pos.X < 0 {
+			pos.X = maxX
+		}
+		w.SetEntityComponent(pos, e)
 	}
 }
 
-type PlayerInput struct{}
+func PlayerInput(r draw.Renderer, w *ecs.World) {
+	event := r.PollEvent()
+	for e := range w.QueryEntitiesIter(Player{}, Position{}) {
+		pos := w.GetEntityComponent(Position{}.CTag(), e).(Position)
 
-func (PlayerInput) Query() []ecs.Tag {
-	return []ecs.Tag{Player{}.ComponentTag(), Position{}.ComponentTag()}
-}
+		switch ev := event.(type) {
+		case *tcell.EventResize:
+			r.Sync()
 
-func (PlayerInput) Process(s tcell.Screen, components ...*ecs.Component) {
-	position := (*components[1]).(*Position)
-	event := s.PollEvent()
-	switch ev := event.(type) {
-	case *tcell.EventResize:
-		s.Sync()
+		case *tcell.EventKey:
+			if ev.Key() == tcell.KeyEscape || ev.Key() == tcell.KeyCtrlC {
+				r.Clear()
+				r.ShowCursor(0, 0)
+				r.Fini()
+				os.Exit(0)
+			}
 
-	case *tcell.EventKey:
-		if ev.Key() == tcell.KeyEscape || ev.Key() == tcell.KeyCtrlC {
-			s.Clear()
-			s.ShowCursor(0, 0)
-			s.Fini()
-			os.Exit(0)
+			switch ev.Key() {
+			case tcell.KeyLeft:
+				pos.X--
+			case tcell.KeyRight:
+				pos.X++
+			case tcell.KeyUp:
+				pos.Y--
+			case tcell.KeyDown:
+				pos.Y++
+			}
+
+		case *tcell.EventMouse:
+			// mouseX, mouseY := ev.Position()
+
+			// 		switch ev.Buttons() {
+			// 		case tcell.Button1, tcell.Button2:
+			// 		case tcell.ButtonNone:
+			// 		}
+			// 	}
+			// }
 		}
-
-		switch ev.Key() {
-		case tcell.KeyLeft:
-			position.X--
-		case tcell.KeyRight:
-			position.X++
-		case tcell.KeyUp:
-			position.Y--
-		case tcell.KeyDown:
-			position.Y++
-		}
-
-	case *tcell.EventMouse:
-		// mouseX, mouseY := ev.Position()
-
-		// 		switch ev.Buttons() {
-		// 		case tcell.Button1, tcell.Button2:
-		// 		case tcell.ButtonNone:
-		// 		}
-		// 	}
-		// }
+		w.SetEntityComponent(pos, e)
 	}
+
 }
 
-type Render struct{}
+func Render(r draw.Renderer, w *ecs.World) {
 
-func (Render) Query() []ecs.Tag {
-	return []ecs.Tag{Position{}.ComponentTag(), Renderable{}.ComponentTag()}
-}
+	for e := range w.QueryEntitiesIter(Renderable{}, Position{}) {
+		pos := w.GetEntityComponent(PositionTag, e).(Position)
+		renderable := w.GetEntityComponent(RenderableTag, e).(Renderable)
 
-func (Render) Process(s tcell.Screen, components ...*ecs.Component) {
-	pos := (*components[0]).(*Position)
-	renderable := (*components[1]).(*Renderable)
-
-	s.SetContent(pos.X, pos.Y, renderable.Glyph, nil, draw.DEFAULT_STYLE)
+		r.SetContent(pos.X, pos.Y, renderable.Glyph, nil, renderable.Style)
+	}
 }

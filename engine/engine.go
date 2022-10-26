@@ -10,8 +10,8 @@ import (
 )
 
 type Engine struct {
-	ECS    *ecs.World
-	Screen tcell.Screen
+	ECS      *ecs.World
+	Renderer draw.Renderer
 }
 
 func NewEngine() *Engine {
@@ -33,8 +33,16 @@ func NewEngine() *Engine {
 	return &Engine{world, screen}
 }
 
-func (e *Engine) Tick() {
-	e.Screen.Clear()
-	e.ECS.Process(e.Screen)
-	e.Screen.Show()
+func (e *Engine) Run() {
+	for {
+		e.tick()
+	}
+}
+
+func (e *Engine) tick() {
+	e.Renderer.Clear()
+
+	e.ECS.RunSystems(e.Renderer)
+
+	e.Renderer.Show()
 }

@@ -5,7 +5,18 @@ import (
 	"github.com/mattn/go-runewidth"
 )
 
-func DrawStr(s tcell.Screen, x, y int, style tcell.Style, str string) {
+type Renderer interface {
+	Sync()
+	PollEvent() tcell.Event
+	Clear()
+	Show()
+	Size() (height int, width int)
+	SetContent(x, y int, primary rune, combining []rune, style tcell.Style)
+	ShowCursor(x, y int)
+	Fini()
+}
+
+func DrawStr(r Renderer, x, y int, style tcell.Style, str string) {
 	for _, c := range str {
 		var comb []rune
 		w := runewidth.RuneWidth(c)
@@ -14,7 +25,7 @@ func DrawStr(s tcell.Screen, x, y int, style tcell.Style, str string) {
 			c = ' '
 			w = 1
 		}
-		s.SetContent(x, y, c, comb, style)
+		r.SetContent(x, y, c, comb, style)
 		x += w
 	}
 }

@@ -9,8 +9,10 @@ type Position struct {
 	X, Y int
 }
 
-func (Position) ComponentTag() ecs.Tag {
-	return ecs.Tag("Position")
+const PositionTag = ecs.CTag("Position")
+
+func (Position) CTag() ecs.CTag {
+	return PositionTag
 }
 
 type Renderable struct {
@@ -18,18 +20,24 @@ type Renderable struct {
 	Style tcell.Style
 }
 
-func (Renderable) ComponentTag() ecs.Tag {
-	return ecs.Tag("Renderable")
+const RenderableTag = ecs.CTag("Renderable")
+
+func (Renderable) CTag() ecs.CTag {
+	return RenderableTag
 }
 
 type Player struct{}
 
-func (Player) ComponentTag() ecs.Tag {
-	return ecs.Tag("Player")
+const PlayerTag = ecs.CTag("Player")
+
+func (Player) CTag() ecs.CTag {
+	return PlayerTag
 }
 
 type LeftMover struct{}
 
-func (LeftMover) ComponentTag() ecs.Tag {
-	return ecs.Tag("LeftMover")
+const LeftMoverTag = ecs.CTag("LeftMover")
+
+func (LeftMover) CTag() ecs.CTag {
+	return LeftMoverTag
 }
