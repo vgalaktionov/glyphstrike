@@ -1,6 +1,6 @@
-# roguelike-go
+# Glyphstrike
 
-> A Go implementation of the python libtcod tutorial.
+> A Roguelike implementation in Go.
 
 ## Running
 

@@ -9,6 +9,7 @@ import (
 	"github.com/vgalaktionov/roguelike-go/ecs"
 )
 
+// Render system handles drawing non-map renderable entities to the screen, taking visibility into account.
 func Render(r draw.Renderer, w *ecs.World) {
 	playerEnt := w.QueryEntitiesSingle(Player{})
 	if playerEnt == ecs.EntityNotFound {

@@ -5,6 +5,8 @@ import (
 	"github.com/mattn/go-runewidth"
 )
 
+// Renderer abstracts away the renderer (currently only tcell), to ease implementation of different
+// rendering backends in the future.
 type Renderer interface {
 	Sync()
 	PollEvent() tcell.Event
@@ -16,6 +18,7 @@ type Renderer interface {
 	Fini()
 }
 
+// DrawStr draws a single line of text to the screen.
 func DrawStr(r Renderer, x, y int, style tcell.Style, str string) {
 	for _, c := range str {
 		var comb []rune
@@ -30,6 +33,7 @@ func DrawStr(r Renderer, x, y int, style tcell.Style, str string) {
 	}
 }
 
+// DrawBox draws a rectangular box with the standard box drawing characters, and (optional) text contents.
 func DrawBox(r Renderer, x1, y1, x2, y2 int, style tcell.Style, text string) {
 	if y2 < y1 {
 		y1, y2 = y2, y1
@@ -60,19 +64,3 @@ func DrawBox(r Renderer, x1, y1, x2, y2 int, style tcell.Style, text string) {
 }
 
 var DEFAULT_STYLE tcell.Style = tcell.StyleDefault.Background(tcell.ColorBlack.TrueColor()).Foreground(tcell.ColorWhite.TrueColor())
-
-type Rect struct {
-	X1, X2, Y1, Y2 int
-}
-
-func NewRect(x, y, w, h int) Rect {
-	return Rect{x, x + w, y, y + h}
-}
-
-func (r *Rect) Intersect(other Rect) bool {
-	return r.X1 <= other.X2 && r.X2 >= other.X1 && r.Y1 <= other.Y2 && r.Y2 >= other.Y1
-}
-
-func (r *Rect) Center() (int, int) {
-	return (r.X1 + r.X2) / 2, (r.Y1 + r.Y2) / 2
-}

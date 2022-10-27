@@ -12,6 +12,9 @@ import (
 	. "github.com/vgalaktionov/roguelike-go/components"
 )
 
+// HandlePlayerInput processes keyboard/mouse input and resize events.
+// By running as a blocking system, it serves a dual purpose of providing a turn-based game loop.
+// (I.e. all foreground system only process a single tick before pausing and waiting for player input.)
 func HandlePlayerInput(r draw.Renderer, w *ecs.World) {
 	event := r.PollEvent()
 	for e := range w.QueryEntitiesIter(Player{}, Position{}) {

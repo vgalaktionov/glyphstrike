@@ -8,11 +8,13 @@ import (
 	. "github.com/vgalaktionov/roguelike-go/components"
 	"github.com/vgalaktionov/roguelike-go/draw"
 	"github.com/vgalaktionov/roguelike-go/ecs"
+	"github.com/vgalaktionov/roguelike-go/util"
 
 	//lint:ignore ST1001 dot importing resources makes it much more readable in this case
 	. "github.com/vgalaktionov/roguelike-go/resources"
 )
 
+// ClearMap only clears the map part of the screen, leaving UI elements intact.
 func ClearMap(r draw.Renderer) {
 	maxX, maxY := r.Size()
 	for x := UIOffsetX; x <= maxX; x++ {
@@ -22,6 +24,7 @@ func ClearMap(r draw.Renderer) {
 	}
 }
 
+// RenderMap system is responsible for rendering the map, taking into account player visibility.
 func RenderMap(r draw.Renderer, w *ecs.World) {
 	m := w.GetResource(MapTag).(*Map)
 
@@ -35,6 +38,7 @@ func RenderMap(r draw.Renderer, w *ecs.World) {
 			for y, tile := range col {
 				renderY := y + UIOffsetY
 				if !viewshed.View.IsVisible(x, y) {
+					// Display revealed tiles as greyed out
 					if m.RevealedTiles[x][y] {
 						switch tile {
 						case FloorTile:
@@ -43,9 +47,11 @@ func RenderMap(r draw.Renderer, w *ecs.World) {
 							r.SetContent(renderX, renderY, '█', nil, tcell.StyleDefault.Foreground(tcell.NewRGBColor(50, 50, 50).TrueColor()))
 						}
 					}
+					// If tile is neither visible nor revealed, skip rendering
 					continue inner
 				}
 
+				// Keep track of tiles we reveal
 				m.RevealedTiles[x][y] = true
 
 				switch tile {
@@ -59,6 +65,7 @@ func RenderMap(r draw.Renderer, w *ecs.World) {
 	}
 }
 
+// NewEmptyMap initializes a map with floor tiles.
 func NewEmptyMap(mapWidth, mapHeight int) *Map {
 	m := &Map{Tiles: make([][]TileType, mapWidth), Width: mapWidth, Height: mapHeight, RevealedTiles: make([][]bool, mapWidth)}
 	for i := 0; i < mapWidth; i++ {
@@ -68,6 +75,7 @@ func NewEmptyMap(mapWidth, mapHeight int) *Map {
 	return m
 }
 
+// NewTestMap generates a map with random walls.
 func NewTestMap(mapWidth, mapHeight int) *Map {
 	m := NewEmptyMap(mapWidth, mapHeight)
 
@@ -90,11 +98,12 @@ func NewTestMap(mapWidth, mapHeight int) *Map {
 
 	}
 
-	m.Rooms[0] = draw.NewRect(0, 0, m.Width, m.Height)
+	m.Rooms[0] = util.NewRect(0, 0, m.Width, m.Height)
 
 	return m
 }
 
+// NewMapRoomsAndCorridors generates a map with rooms guaranteed to be connected by corridors.
 func NewMapRoomsAndCorridors(mapWidth, mapHeight int) *Map {
 	m := NewEmptyMap(mapWidth, mapHeight)
 	m.Fill(WallTile)
@@ -104,13 +113,15 @@ func NewMapRoomsAndCorridors(mapWidth, mapHeight int) *Map {
 	maxSize := 20
 
 	for i := 0; i < maxRooms; i++ {
+		// Roll for random room sizes within parameters.
 		w := rand.Intn(maxSize-minSize) + minSize
 		h := rand.Intn(maxSize-minSize) + minSize
 		x := rand.Intn(m.Width - w - 1)
 		y := rand.Intn(m.Height - h - 1)
 
-		room := draw.NewRect(x, y, w, h)
+		room := util.NewRect(x, y, w, h)
 		ok := true
+		// Don't overlap with other rooms
 		for _, otherRoom := range m.Rooms {
 			if room.Intersect(otherRoom) {
 				ok = false
@@ -123,6 +134,7 @@ func NewMapRoomsAndCorridors(mapWidth, mapHeight int) *Map {
 			if len(m.Rooms) > 0 {
 				newX, newY := room.Center()
 				prevX, prevY := m.Rooms[len(m.Rooms)-1].Center()
+				// Flip a coin to decide which side our tunnels go
 				if rand.Intn(2) == 1 {
 					m.ApplyHorizontalTunnel(prevX, newY, prevY)
 					m.ApplyVerticalTunnel(prevY, newY, newX)

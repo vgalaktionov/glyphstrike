@@ -9,6 +9,7 @@ import (
 	"github.com/vgalaktionov/roguelike-go/events"
 )
 
+// ProcessMonsterAI simulates monster behaviour
 func ProcessMonsterAI(r draw.Renderer, w *ecs.World) {
 	player := w.QueryEntitiesSingle(Player{}, Position{})
 	playerPos := w.GetEntityComponent(PositionTag, player).(Position)

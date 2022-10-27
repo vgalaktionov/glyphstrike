@@ -9,6 +9,7 @@ import (
 	"github.com/vgalaktionov/roguelike-go/resources"
 )
 
+// Update visibility computes visibility field for affected entities each tick using a raycasting algorithm.
 func UpdateVisibility(r draw.Renderer, w *ecs.World) {
 
 	for e := range w.QueryEntitiesIter(Viewshed{}, Position{}) {
