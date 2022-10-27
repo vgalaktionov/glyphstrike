@@ -4,13 +4,12 @@ import (
 
 	//lint:ignore ST1001 dot importing components makes it much more readable in this case
 	. "github.com/vgalaktionov/roguelike-go/components"
-	"github.com/vgalaktionov/roguelike-go/draw"
 	"github.com/vgalaktionov/roguelike-go/ecs"
 	"github.com/vgalaktionov/roguelike-go/events"
 )
 
 // ProcessMonsterAI simulates monster behaviour
-func ProcessMonsterAI(r draw.Renderer, w *ecs.World) {
+func ProcessMonsterAI(w *ecs.World) {
 	player := w.QueryEntitiesSingle(Player{}, Position{})
 	playerPos := w.GetEntityComponent(PositionTag, player).(Position)
 

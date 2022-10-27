@@ -34,8 +34,8 @@ type Event interface {
 	ETag() ETag
 }
 
-// System is just a function that takes a renderer implementation and the ECS world.
-type System func(draw.Renderer, *World)
+// System is just a function that acts on the ECS world.
+type System func(*World)
 
 // World encapsulates the internal datastructures of the ECS
 type World struct {
@@ -139,11 +139,9 @@ const EntityNotFound = Entity(-1)
 func (w *World) QueryEntitiesSingle(templates ...Component) Entity {
 
 	for e := range w.entities {
-		e := e
 		hasAll := true
 	inner:
 		for _, t := range templates {
-			t := t
 			_, hasAll = w.components[t.CTag()][e]
 			if !hasAll {
 				break inner
@@ -180,15 +178,15 @@ func (w *World) QueryEntitiesIter(templates ...Component) chan Entity {
 }
 
 // RunEventSystems is meant to be called once, before entering the main game loop.
-func (w *World) RunEventSystems(r draw.Renderer) {
+func (w *World) RunEventSystems(r draw.Screen) {
 	for _, runEventSystem := range w.eventSystems {
-		go runEventSystem(r, w)
+		go runEventSystem(w)
 	}
 }
 
 // RunSystems is meant to be called on every tick of the game loop.
-func (w *World) RunSystems(r draw.Renderer) {
+func (w *World) RunSystems(r draw.Screen) {
 	for _, runSystem := range w.systems {
-		runSystem(r, w)
+		runSystem(w)
 	}
 }

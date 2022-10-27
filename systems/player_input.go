@@ -4,7 +4,6 @@ import (
 	"os"
 
 	"github.com/gdamore/tcell/v2"
-	"github.com/vgalaktionov/roguelike-go/draw"
 	"github.com/vgalaktionov/roguelike-go/ecs"
 	"github.com/vgalaktionov/roguelike-go/resources"
 
@@ -15,7 +14,8 @@ import (
 // HandlePlayerInput processes keyboard/mouse input and resize events.
 // By running as a blocking system, it serves a dual purpose of providing a turn-based game loop.
 // (I.e. all foreground system only process a single tick before pausing and waiting for player input.)
-func HandlePlayerInput(r draw.Renderer, w *ecs.World) {
+func HandlePlayerInput(w *ecs.World) {
+	r := w.GetResource(resources.RendererTag).(*resources.Renderer)
 	event := r.PollEvent()
 	for e := range w.QueryEntitiesIter(Player{}, Position{}) {
 		playerPos := w.GetEntityComponent(PositionTag, e).(Position)

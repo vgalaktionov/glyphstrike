@@ -5,12 +5,14 @@ import (
 
 	//lint:ignore ST1001 dot importing components makes it much more readable in this case
 	. "github.com/vgalaktionov/roguelike-go/components"
-	"github.com/vgalaktionov/roguelike-go/draw"
 	"github.com/vgalaktionov/roguelike-go/ecs"
+	"github.com/vgalaktionov/roguelike-go/resources"
 )
 
 // Render system handles drawing non-map renderable entities to the screen, taking visibility into account.
-func Render(r draw.Renderer, w *ecs.World) {
+func Render(w *ecs.World) {
+	r := w.GetResource(resources.RendererTag).(*resources.Renderer)
+
 	playerEnt := w.QueryEntitiesSingle(Player{})
 	if playerEnt == ecs.EntityNotFound {
 		panic(fmt.Sprintf("+%v", w))

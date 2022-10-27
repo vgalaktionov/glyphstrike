@@ -15,7 +15,7 @@ import (
 )
 
 // ClearMap only clears the map part of the screen, leaving UI elements intact.
-func ClearMap(r draw.Renderer) {
+func ClearMap(r draw.Screen) {
 	maxX, maxY := r.Size()
 	for x := UIOffsetX; x <= maxX; x++ {
 		for y := UIOffsetY; y <= maxY; y++ {
@@ -25,8 +25,9 @@ func ClearMap(r draw.Renderer) {
 }
 
 // RenderMap system is responsible for rendering the map, taking into account player visibility.
-func RenderMap(r draw.Renderer, w *ecs.World) {
+func RenderMap(w *ecs.World) {
 	m := w.GetResource(MapTag).(*Map)
+	r := w.GetResource(RendererTag).(*Renderer)
 
 	for e := range w.QueryEntitiesIter(Player{}, Viewshed{}) {
 		viewshed := w.GetEntityComponent(ViewshedTag, e).(Viewshed)

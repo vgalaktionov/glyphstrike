@@ -5,6 +5,7 @@ import (
 	"github.com/vgalaktionov/roguelike-go/draw"
 	"github.com/vgalaktionov/roguelike-go/ecs"
 	"github.com/vgalaktionov/roguelike-go/events"
+	"github.com/vgalaktionov/roguelike-go/resources"
 	"github.com/vgalaktionov/roguelike-go/util"
 )
 
@@ -16,9 +17,10 @@ type consoleBuffer struct {
 
 // Console system runs in separate goroutine (as eventsystem) and processes ConsoleEvent messages,
 // writing the last n messages to the screen.
-func Console(r draw.Renderer, w *ecs.World) {
+func Console(w *ecs.World) {
 	ch := w.GetEventChannel(events.ConsoleEventTag)
 	cb := consoleBuffer{}
+	r := w.GetResource(resources.RendererTag).(*resources.Renderer)
 
 	_, maxY := r.Size()
 	// loop forever, as we run in background

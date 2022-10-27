@@ -5,9 +5,9 @@ import (
 	"github.com/mattn/go-runewidth"
 )
 
-// Renderer abstracts away the renderer (currently only tcell), to ease implementation of different
-// rendering backends in the future.
-type Renderer interface {
+// Screen abstracts away the renderer (currently only tcell), to ease testing as well as
+// implementation of different rendering backends in the future.
+type Screen interface {
 	Sync()
 	PollEvent() tcell.Event
 	Clear()
@@ -19,7 +19,7 @@ type Renderer interface {
 }
 
 // DrawStr draws a single line of text to the screen.
-func DrawStr(r Renderer, x, y int, style tcell.Style, str string) {
+func DrawStr(r Screen, x, y int, style tcell.Style, str string) {
 	for _, c := range str {
 		var comb []rune
 		w := runewidth.RuneWidth(c)
@@ -34,7 +34,7 @@ func DrawStr(r Renderer, x, y int, style tcell.Style, str string) {
 }
 
 // DrawBox draws a rectangular box with the standard box drawing characters, and (optional) text contents.
-func DrawBox(r Renderer, x1, y1, x2, y2 int, style tcell.Style, text string) {
+func DrawBox(r Screen, x1, y1, x2, y2 int, style tcell.Style, text string) {
 	if y2 < y1 {
 		y1, y2 = y2, y1
 	}

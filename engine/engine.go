@@ -1,7 +1,7 @@
 package engine
 
 import (
-	"log"
+	"io"
 	"math/rand"
 	"time"
 
@@ -12,6 +12,7 @@ import (
 	"github.com/vgalaktionov/roguelike-go/draw"
 	"github.com/vgalaktionov/roguelike-go/ecs"
 	"github.com/vgalaktionov/roguelike-go/events"
+	"github.com/vgalaktionov/roguelike-go/resources"
 	"github.com/vgalaktionov/roguelike-go/systems"
 )
 
@@ -19,7 +20,7 @@ import (
 // Currently, this only means the ECS and the renderer.
 type Engine struct {
 	ECS      *ecs.World
-	Renderer draw.Renderer
+	Renderer draw.Screen
 }
 
 // NewEngine abstracts away the technical details of setting up a terminal to render to.
@@ -27,17 +28,8 @@ type Engine struct {
 func NewEngine() *Engine {
 	rand.Seed(time.Now().UnixNano())
 	encoding.Register()
-	// Initialize screen
-	screen, err := tcell.NewScreen()
-	if err != nil {
-		log.Fatalf("%+v", err)
-	}
-	if err := screen.Init(); err != nil {
-		log.Fatalf("%+v", err)
-	}
-	screen.SetStyle(draw.DEFAULT_STYLE)
-	screen.EnableMouse()
-	screen.Clear()
+
+	screen := draw.NewConsoleRenderer()
 
 	world := ecs.NewWorld()
 
@@ -55,8 +47,9 @@ func NewEngine() *Engine {
 	mapY := screenY - systems.UIOffsetY
 
 	m := systems.NewMapRoomsAndCorridors(mapX, mapY)
-	// m := systems.NewTestMap(mapX, mapY)
+
 	world.AddResource(m)
+	world.AddResource(&resources.Renderer{ConsoleRenderer: screen})
 
 	playerX, playerY := m.Rooms[0].Center()
 	world.AddEntity(
@@ -89,6 +82,22 @@ func NewEngine() *Engine {
 		)
 	}
 	return &Engine{world, screen}
+}
+
+// EngineLogger retains a private reference to the Engine
+type EngineLogger struct {
+	engine *Engine
+}
+
+// Write implements the io.Writer interface for the console logging system
+func (e *EngineLogger) Write(msg []byte) (int, error) {
+	e.engine.ECS.DispatchEvent(events.ConsoleEvent{Message: string(msg)})
+	return len(msg), nil
+}
+
+// Logger returns a log sink hooked up to the console system.
+func (e *Engine) Logger() io.Writer {
+	return &EngineLogger{engine: e}
 }
 
 // Run is the entrypoint into the engine. It kicks off background (event) systems and starts the game loop.
