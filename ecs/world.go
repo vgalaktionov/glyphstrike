@@ -19,6 +19,12 @@ type Resource interface {
 	RTag() RTag
 }
 
+type ETag string
+
+type Event interface {
+	ETag() ETag
+}
+
 type System func(draw.Renderer, *World)
 
 type World struct {
@@ -27,6 +33,8 @@ type World struct {
 	components   map[CTag]map[Entity]Component
 	systems      []System
 	resources    map[RTag]Resource
+	events       map[ETag]chan Event
+	eventSystems []System
 }
 
 func NewWorld() *World {
@@ -36,6 +44,8 @@ func NewWorld() *World {
 		make(map[CTag]map[Entity]Component),
 		nil,
 		make(map[RTag]Resource),
+		make(map[ETag]chan Event),
+		nil,
 	}
 	return w
 }
@@ -70,6 +80,18 @@ func (w *World) GetResource(tag RTag) Resource {
 
 func (w *World) RegisterSystem(s System) {
 	w.systems = append(w.systems, s)
+}
+
+func (w *World) RegisterEventSystem(s System) {
+	w.eventSystems = append(w.eventSystems, s)
+}
+
+func (w *World) RegisterEvent(e Event) {
+	w.events[e.ETag()] = make(chan Event, 1000)
+}
+
+func (w *World) GetEventChannel(tag ETag) chan Event {
+	return w.events[tag]
 }
 
 func (w *World) GetEntityComponent(tag CTag, ent Entity) Component {
@@ -125,6 +147,12 @@ func (w *World) QueryEntitiesIter(templates ...Component) chan Entity {
 		}
 	}()
 	return ch
+}
+
+func (w *World) RunEventSystems(r draw.Renderer) {
+	for _, runEventSystem := range w.eventSystems {
+		go runEventSystem(r, w)
+	}
 }
 
 func (w *World) RunSystems(r draw.Renderer) {

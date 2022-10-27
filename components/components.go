@@ -45,3 +45,11 @@ const ViewshedTag = ecs.CTag("Viewshed")
 func (Viewshed) CTag() ecs.CTag {
 	return ViewshedTag
 }
+
+type MonsterAI struct{}
+
+const MonsterAITag = ecs.CTag("MonsterAI")
+
+func (MonsterAI) CTag() ecs.CTag {
+	return MonsterAITag
+}

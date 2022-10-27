@@ -18,16 +18,17 @@ func RenderMap(r draw.Renderer, w *ecs.World) {
 	for e := range w.QueryEntitiesIter(Player{}, Viewshed{}) {
 		viewshed := w.GetEntityComponent(ViewshedTag, e).(Viewshed)
 		for x, col := range m.Tiles {
+			renderX := x + UIOffsetX
 		inner:
 			for y, tile := range col {
-
+				renderY := y + UIOffsetY
 				if !viewshed.View.IsVisible(x, y) {
 					if m.RevealedTiles[x][y] {
 						switch tile {
 						case FloorTile:
-							r.SetContent(x, y, ' ', nil, tcell.StyleDefault.Background(tcell.NewRGBColor(20, 20, 20)))
+							r.SetContent(renderX, renderY, ' ', nil, tcell.StyleDefault.Background(tcell.NewRGBColor(20, 20, 20)))
 						case WallTile:
-							r.SetContent(x, y, '█', nil, tcell.StyleDefault.Foreground(tcell.NewRGBColor(50, 50, 50).TrueColor()))
+							r.SetContent(renderX, renderY, '█', nil, tcell.StyleDefault.Foreground(tcell.NewRGBColor(50, 50, 50).TrueColor()))
 						}
 					}
 					continue inner
@@ -37,9 +38,9 @@ func RenderMap(r draw.Renderer, w *ecs.World) {
 
 				switch tile {
 				case FloorTile:
-					r.SetContent(x, y, ' ', nil, tcell.StyleDefault.Foreground(tcell.ColorLightGray.TrueColor()).Bold(true))
+					r.SetContent(renderX, renderY, ' ', nil, tcell.StyleDefault.Foreground(tcell.ColorLightGray.TrueColor()).Bold(true))
 				case WallTile:
-					r.SetContent(x, y, '█', nil, tcell.StyleDefault.Foreground(tcell.ColorDarkGreen.TrueColor()).Bold(true))
+					r.SetContent(renderX, renderY, '█', nil, tcell.StyleDefault.Foreground(tcell.ColorDarkGreen.TrueColor()).Bold(true))
 				}
 			}
 		}

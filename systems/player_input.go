@@ -12,7 +12,7 @@ import (
 	. "github.com/vgalaktionov/roguelike-go/components"
 )
 
-func PlayerInput(r draw.Renderer, w *ecs.World) {
+func HandlePlayerInput(r draw.Renderer, w *ecs.World) {
 	event := r.PollEvent()
 	for e := range w.QueryEntitiesIter(Player{}, Position{}) {
 		playerPos := w.GetEntityComponent(PositionTag, e).(Position)

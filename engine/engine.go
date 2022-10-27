@@ -36,6 +36,8 @@ func NewEngine() *Engine {
 }
 
 func (e *Engine) Run() {
+	e.ECS.RunEventSystems(e.Renderer)
+
 	for {
 		e.tick()
 	}

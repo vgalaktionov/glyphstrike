@@ -9,7 +9,7 @@ import (
 	"github.com/vgalaktionov/roguelike-go/resources"
 )
 
-func Visibility(r draw.Renderer, w *ecs.World) {
+func UpdateVisibility(r draw.Renderer, w *ecs.World) {
 
 	for e := range w.QueryEntitiesIter(Viewshed{}, Position{}) {
 		viewshed := w.GetEntityComponent(ViewshedTag, e).(Viewshed)
