@@ -1,7 +1,6 @@
 package ecs
 
 import (
-	set "github.com/deckarep/golang-set/v2"
 	"github.com/vgalaktionov/roguelike-go/draw"
 )
 
@@ -41,7 +40,7 @@ type System func(draw.Renderer, *World)
 // World encapsulates the internal datastructures of the ECS
 type World struct {
 	lastEntityID Entity
-	entities     set.Set[Entity]
+	entities     map[Entity]struct{}
 	components   map[CTag]map[Entity]Component
 	systems      []System
 	resources    map[RTag]Resource
@@ -53,7 +52,7 @@ type World struct {
 func NewWorld() *World {
 	w := &World{
 		0,
-		set.NewSet[Entity](),
+		make(map[Entity]struct{}),
 		make(map[CTag]map[Entity]Component),
 		nil,
 		make(map[RTag]Resource),
@@ -66,7 +65,7 @@ func NewWorld() *World {
 // AddEntity adds a new entity to the world with any number of attached components, and returns the ID.
 func (w *World) AddEntity(components ...Component) Entity {
 	w.lastEntityID++
-	w.entities.Add(w.lastEntityID)
+	w.entities[w.lastEntityID] = struct{}{}
 	for _, c := range components {
 		c := c
 		if w.components[c.CTag()] == nil {
@@ -79,7 +78,7 @@ func (w *World) AddEntity(components ...Component) Entity {
 
 // RemoveEntity removes an entity and all associated components by ID.
 func (w *World) RemoveEntity(ent Entity) {
-	w.entities.Remove(ent)
+	delete(w.entities, ent)
 	for _, components := range w.components {
 		delete(components, ent)
 	}
@@ -139,7 +138,7 @@ const EntityNotFound = Entity(-1)
 // QueryEntitiesSingle takes templates (empty components) and returns the first entity with these components, or -1.
 func (w *World) QueryEntitiesSingle(templates ...Component) Entity {
 
-	for e := range w.entities.Iter() {
+	for e := range w.entities {
 		e := e
 		hasAll := true
 	inner:
@@ -163,7 +162,7 @@ func (w *World) QueryEntitiesIter(templates ...Component) chan Entity {
 	go func() {
 		defer close(ch)
 
-		for e := range w.entities.Iter() {
+		for e := range w.entities {
 			hasAll := true
 		inner:
 			for _, t := range templates {
