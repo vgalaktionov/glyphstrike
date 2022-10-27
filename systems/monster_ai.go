@@ -10,11 +10,14 @@ import (
 )
 
 func ProcessMonsterAI(r draw.Renderer, w *ecs.World) {
-	cec := w.GetEventChannel(events.ConsoleEventTag)
-	for range w.QueryEntitiesIter(Position{}, Viewshed{}, MonsterAI{}) {
-		msg := "Monsters consider their own existence"
-		go func() {
-			cec <- events.ConsoleEvent{Message: msg}
-		}()
+	player := w.QueryEntitiesSingle(Player{}, Position{})
+	playerPos := w.GetEntityComponent(PositionTag, player).(Position)
+
+	for e := range w.QueryEntitiesIter(Position{}, Viewshed{}, MonsterAI{}) {
+		vs := w.GetEntityComponent(ViewshedTag, e).(Viewshed)
+		if vs.View.IsVisible(playerPos.X, playerPos.Y) {
+			msg := "Monster shouts insults."
+			w.DispatchEvent(events.ConsoleEvent{Message: msg})
+		}
 	}
 }

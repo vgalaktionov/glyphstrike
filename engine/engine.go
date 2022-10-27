@@ -9,6 +9,7 @@ import (
 	"github.com/gdamore/tcell/v2/encoding"
 	"github.com/vgalaktionov/roguelike-go/draw"
 	"github.com/vgalaktionov/roguelike-go/ecs"
+	"github.com/vgalaktionov/roguelike-go/systems"
 )
 
 type Engine struct {
@@ -44,9 +45,7 @@ func (e *Engine) Run() {
 }
 
 func (e *Engine) tick() {
-	e.Renderer.Clear()
-
+	systems.ClearMap(e.Renderer)
 	e.ECS.RunSystems(e.Renderer)
-
 	e.Renderer.Show()
 }

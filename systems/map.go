@@ -13,12 +13,24 @@ import (
 	. "github.com/vgalaktionov/roguelike-go/resources"
 )
 
+func ClearMap(r draw.Renderer) {
+	maxX, maxY := r.Size()
+	for x := UIOffsetX; x <= maxX; x++ {
+		for y := UIOffsetY; y <= maxY; y++ {
+			r.SetContent(x, y, ' ', nil, tcell.StyleDefault)
+		}
+	}
+}
+
 func RenderMap(r draw.Renderer, w *ecs.World) {
 	m := w.GetResource(MapTag).(*Map)
+
 	for e := range w.QueryEntitiesIter(Player{}, Viewshed{}) {
 		viewshed := w.GetEntityComponent(ViewshedTag, e).(Viewshed)
+
 		for x, col := range m.Tiles {
 			renderX := x + UIOffsetX
+
 		inner:
 			for y, tile := range col {
 				renderY := y + UIOffsetY

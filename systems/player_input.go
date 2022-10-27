@@ -27,6 +27,7 @@ func HandlePlayerInput(r draw.Renderer, w *ecs.World) {
 				r.ShowCursor(0, 0)
 				r.Fini()
 				os.Exit(0)
+				break
 			}
 
 			var deltaX, deltaY int

@@ -38,13 +38,6 @@ func DrawBox(r Renderer, x1, y1, x2, y2 int, style tcell.Style, text string) {
 		x1, x2 = x2, x1
 	}
 
-	// // Fill background
-	// for row := y1; row <= y2; row++ {
-	// 	for col := x1; col <= x2; col++ {
-	// 		r.SetContent(col, row, ' ', nil, style)
-	// 	}
-	// }
-
 	// Draw borders
 	for col := x1; col <= x2; col++ {
 		r.SetContent(col, y1, tcell.RuneHLine, nil, style)

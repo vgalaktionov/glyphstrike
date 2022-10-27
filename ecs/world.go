@@ -94,6 +94,12 @@ func (w *World) GetEventChannel(tag ETag) chan Event {
 	return w.events[tag]
 }
 
+func (w *World) DispatchEvent(evt Event) {
+	go func() {
+		w.events[evt.ETag()] <- evt
+	}()
+}
+
 func (w *World) GetEntityComponent(tag CTag, ent Entity) Component {
 	return w.components[tag][ent]
 }

@@ -6,10 +6,14 @@ import (
 	"github.com/vgalaktionov/roguelike-go/ecs"
 )
 
-const UIOffsetX = 32
-const UIOffsetY = 3
+const UIOffsetX = 42
+const UIOffsetY = 1
+
+const title = "☄️ Glyphstrike"
 
 func UI(r draw.Renderer, w *ecs.World) {
-	_, maxY := r.Size()
+	maxX, maxY := r.Size()
 	draw.DrawBox(r, 0, 0, UIOffsetX, maxY-1, tcell.StyleDefault, "")
+
+	draw.DrawStr(r, maxX/2-len(title)/2, 0, tcell.StyleDefault, title)
 }

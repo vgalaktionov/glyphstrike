@@ -1,12 +1,11 @@
 package systems
 
 import (
-	"math"
-
 	"github.com/gdamore/tcell/v2"
 	"github.com/vgalaktionov/roguelike-go/draw"
 	"github.com/vgalaktionov/roguelike-go/ecs"
 	"github.com/vgalaktionov/roguelike-go/events"
+	"github.com/vgalaktionov/roguelike-go/util"
 )
 
 type consoleBuffer struct {
@@ -28,8 +27,8 @@ func Console(r draw.Renderer, w *ecs.World) {
 
 		}
 		if cb.dirty {
-			for y, line := range cb.lines[int(math.Max(float64(len(cb.lines)-maxY), float64(0))):] {
-				draw.DrawStr(r, 1, y, tcell.StyleDefault, line[:UIOffsetX-1])
+			for y, line := range cb.lines[util.MaxInt(len(cb.lines)-maxY, 0):] {
+				draw.DrawStr(r, 1, y, tcell.StyleDefault, line[:util.MinInt(UIOffsetX-1, len(line))])
 			}
 			cb.dirty = false
 		}
