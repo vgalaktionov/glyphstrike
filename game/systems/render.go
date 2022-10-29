@@ -3,10 +3,10 @@ package systems
 import (
 	"fmt"
 
-	//lint:ignore ST1001 dot importing components makes it much more readable in this case
-	. "github.com/vgalaktionov/roguelike-go/components"
 	"github.com/vgalaktionov/roguelike-go/ecs"
-	"github.com/vgalaktionov/roguelike-go/resources"
+	//lint:ignore ST1001 dot importing components makes it much more readable in this case
+	. "github.com/vgalaktionov/roguelike-go/game/components"
+	"github.com/vgalaktionov/roguelike-go/game/resources"
 )
 
 // Render system handles drawing non-map renderable entities to the screen, taking visibility into account.

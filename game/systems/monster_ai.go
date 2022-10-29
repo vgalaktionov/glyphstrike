@@ -1,11 +1,10 @@
 package systems
 
 import (
-
-	//lint:ignore ST1001 dot importing components makes it much more readable in this case
-	. "github.com/vgalaktionov/roguelike-go/components"
 	"github.com/vgalaktionov/roguelike-go/ecs"
-	"github.com/vgalaktionov/roguelike-go/events"
+	//lint:ignore ST1001 dot importing components makes it much more readable in this case
+	. "github.com/vgalaktionov/roguelike-go/game/components"
+	"github.com/vgalaktionov/roguelike-go/game/events"
 )
 
 // ProcessMonsterAI simulates monster behaviour

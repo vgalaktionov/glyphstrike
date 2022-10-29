@@ -4,7 +4,7 @@ import (
 	"github.com/gdamore/tcell/v2"
 	"github.com/vgalaktionov/roguelike-go/draw"
 	"github.com/vgalaktionov/roguelike-go/ecs"
-	"github.com/vgalaktionov/roguelike-go/resources"
+	"github.com/vgalaktionov/roguelike-go/game/resources"
 )
 
 const UIOffsetX = 42

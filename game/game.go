@@ -1,4 +1,4 @@
-package engine
+package game
 
 import (
 	"io"
@@ -8,24 +8,24 @@ import (
 	"github.com/gdamore/tcell/v2"
 	"github.com/gdamore/tcell/v2/encoding"
 	"github.com/norendren/go-fov/fov"
-	"github.com/vgalaktionov/roguelike-go/components"
 	"github.com/vgalaktionov/roguelike-go/draw"
 	"github.com/vgalaktionov/roguelike-go/ecs"
-	"github.com/vgalaktionov/roguelike-go/events"
-	"github.com/vgalaktionov/roguelike-go/resources"
-	"github.com/vgalaktionov/roguelike-go/systems"
+	"github.com/vgalaktionov/roguelike-go/game/components"
+	"github.com/vgalaktionov/roguelike-go/game/events"
+	"github.com/vgalaktionov/roguelike-go/game/resources"
+	"github.com/vgalaktionov/roguelike-go/game/systems"
 )
 
-// Engine binds together all the high-level subsystems for the game to use.
+// Game binds together all the high-level subsystems for the game to use.
 // Currently, this only means the ECS and the renderer.
-type Engine struct {
+type Game struct {
 	ECS      *ecs.World
 	Renderer draw.Screen
 }
 
-// NewEngine abstracts away the technical details of setting up a terminal to render to.
+// NewGame abstracts away the technical details of setting up a terminal to render to.
 // It also sets up default systems and events.
-func NewEngine() *Engine {
+func NewGame() *Game {
 	rand.Seed(time.Now().UnixNano())
 	encoding.Register()
 
@@ -83,38 +83,38 @@ func NewEngine() *Engine {
 			components.MonsterAI{},
 		)
 	}
-	return &Engine{w, screen}
+	return &Game{w, screen}
 }
 
-// EngineLogger retains a private reference to the Engine
-type EngineLogger struct {
-	engine *Engine
+// GameLogger retains a private reference to the Game
+type GameLogger struct {
+	game *Game
 }
 
 // Write implements the io.Writer interface for the console logging system
-func (e *EngineLogger) Write(msg []byte) (int, error) {
-	ecs.DispatchEvent(e.engine.ECS, events.ConsoleEvent{Message: string(msg)})
+func (gl *GameLogger) Write(msg []byte) (int, error) {
+	ecs.DispatchEvent(gl.game.ECS, events.ConsoleEvent{Message: string(msg)})
 	return len(msg), nil
 }
 
 // Logger returns a log sink hooked up to the console system.
-func (e *Engine) Logger() io.Writer {
-	return &EngineLogger{engine: e}
+func (g *Game) Logger() io.Writer {
+	return &GameLogger{game: g}
 }
 
-// Run is the entrypoint into the engine. It kicks off background (event) systems and starts the game loop.
-func (e *Engine) Run() {
-	ecs.RunEventSystems(e.ECS)
+// Run is the entrypoint into the Game. It kicks off background (event) systems and starts the game loop.
+func (g *Game) Run() {
+	ecs.RunEventSystems(g.ECS)
 
 	for {
-		e.tick()
+		g.tick()
 	}
 }
 
 // tick is called on every tick of the game loop. It clears the map portion of the screen, processes
 // all blocking systems and flushes the terminal buffer to screen.
-func (e *Engine) tick() {
-	systems.ClearMap(e.Renderer)
-	ecs.RunSystems(e.ECS)
-	e.Renderer.Show()
+func (g *Game) tick() {
+	systems.ClearMap(g.Renderer)
+	ecs.RunSystems(g.ECS)
+	g.Renderer.Show()
 }

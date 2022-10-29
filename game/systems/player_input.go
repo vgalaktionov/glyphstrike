@@ -5,10 +5,10 @@ import (
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/vgalaktionov/roguelike-go/ecs"
-	"github.com/vgalaktionov/roguelike-go/resources"
+	"github.com/vgalaktionov/roguelike-go/game/resources"
 
 	//lint:ignore ST1001 dot importing components makes it much more readable in this case
-	. "github.com/vgalaktionov/roguelike-go/components"
+	. "github.com/vgalaktionov/roguelike-go/game/components"
 )
 
 // HandlePlayerInput processes keyboard/mouse input and resize events.

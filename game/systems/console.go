@@ -4,10 +4,10 @@ import (
 	"github.com/gdamore/tcell/v2"
 	"github.com/vgalaktionov/roguelike-go/draw"
 	"github.com/vgalaktionov/roguelike-go/ecs"
-	"github.com/vgalaktionov/roguelike-go/events"
+	"github.com/vgalaktionov/roguelike-go/game/events"
 
 	//lint:ignore ST1001 dot importing resources makes it much more readable in this case
-	. "github.com/vgalaktionov/roguelike-go/resources"
+	. "github.com/vgalaktionov/roguelike-go/game/resources"
 	"github.com/vgalaktionov/roguelike-go/util"
 )
 

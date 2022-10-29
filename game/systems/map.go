@@ -4,14 +4,14 @@ import (
 	"math/rand"
 
 	"github.com/gdamore/tcell/v2"
-	//lint:ignore ST1001 dot importing components makes it much more readable in this case
-	. "github.com/vgalaktionov/roguelike-go/components"
 	"github.com/vgalaktionov/roguelike-go/draw"
 	"github.com/vgalaktionov/roguelike-go/ecs"
+	//lint:ignore ST1001 dot importing components makes it much more readable in this case
+	. "github.com/vgalaktionov/roguelike-go/game/components"
 	"github.com/vgalaktionov/roguelike-go/util"
 
 	//lint:ignore ST1001 dot importing resources makes it much more readable in this case
-	. "github.com/vgalaktionov/roguelike-go/resources"
+	. "github.com/vgalaktionov/roguelike-go/game/resources"
 )
 
 // ClearMap only clears the map part of the screen, leaving UI elements intact.
