@@ -1,6 +1,7 @@
 package systems
 
 import (
+	"log"
 	"os"
 
 	"github.com/gdamore/tcell/v2"
@@ -36,22 +37,19 @@ func HandlePlayerInput(w *ecs.World) {
 			var deltaX, deltaY int
 
 			switch true {
-			case tcell.KeyLeft == ev.Key():
-				fallthrough
-			case tcell.KeyRune == ev.Key() && ev.Rune() == 'h':
+			case tcell.KeyLeft == ev.Key(), tcell.KeyRune == ev.Key() && ev.Rune() == 'a':
 				deltaX--
-			case tcell.KeyRight == ev.Key():
-				fallthrough
-			case tcell.KeyRune == ev.Key() && ev.Rune() == 'l':
+			case tcell.KeyRight == ev.Key(), tcell.KeyRune == ev.Key() && ev.Rune() == 'd':
 				deltaX++
-			case tcell.KeyUp == ev.Key():
-				fallthrough
-			case tcell.KeyRune == ev.Key() && ev.Rune() == 'k':
+			case tcell.KeyUp == ev.Key(), tcell.KeyRune == ev.Key() && ev.Rune() == 'w':
 				deltaY--
-			case tcell.KeyDown == ev.Key():
-				fallthrough
-			case tcell.KeyRune == ev.Key() && ev.Rune() == 'j':
+			case tcell.KeyDown == ev.Key(), tcell.KeyRune == ev.Key() && ev.Rune() == 's':
 				deltaY++
+
+			case tcell.KeyUpLeft == ev.Key(), tcell.KeyUpRight == ev.Key(), tcell.KeyDownRight == ev.Key(), tcell.KeyDownLeft == ev.Key():
+				log.Print("Diagonal key pressed")
+			default:
+				log.Printf("Unbound key pressed: %b", ev.Rune())
 			}
 
 			destX := playerPos.X + deltaX
@@ -74,5 +72,4 @@ func HandlePlayerInput(w *ecs.World) {
 			// }
 		}
 	}
-
 }
