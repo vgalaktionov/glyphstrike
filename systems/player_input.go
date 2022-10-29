@@ -15,10 +15,10 @@ import (
 // By running as a blocking system, it serves a dual purpose of providing a turn-based game loop.
 // (I.e. all foreground system only process a single tick before pausing and waiting for player input.)
 func HandlePlayerInput(w *ecs.World) {
-	r := w.GetResource(resources.RendererTag).(*resources.Renderer)
+	r := ecs.GetResource[*resources.Renderer](w)
 	event := r.PollEvent()
-	for e := range w.QueryEntitiesIter(Player{}, Position{}) {
-		playerPos := w.GetEntityComponent(PositionTag, e).(Position)
+	for e := range ecs.QueryEntitiesIter(w, Player{}, Position{}) {
+		playerPos := ecs.GetEntityComponent[Position](w, e)
 
 		switch ev := event.(type) {
 		case *tcell.EventResize:
@@ -58,9 +58,9 @@ func HandlePlayerInput(w *ecs.World) {
 			destY := playerPos.Y + deltaY
 
 			// Walls are solid
-			m := w.GetResource(resources.MapTag).(*resources.Map)
+			m := ecs.GetResource[*resources.Map](w)
 			if !m.IsOpaque(destX, destY) {
-				w.SetEntityComponent(Position{X: destX, Y: destY}, e)
+				ecs.SetEntityComponent(w, Position{X: destX, Y: destY}, e)
 			}
 
 		case *tcell.EventMouse:

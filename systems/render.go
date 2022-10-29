@@ -11,22 +11,22 @@ import (
 
 // Render system handles drawing non-map renderable entities to the screen, taking visibility into account.
 func Render(w *ecs.World) {
-	r := w.GetResource(resources.RendererTag).(*resources.Renderer)
+	r := ecs.GetResource[*resources.Renderer](w)
 
-	playerEnt := w.QueryEntitiesSingle(Player{})
+	playerEnt := ecs.QueryEntitiesSingle(w, Player{})
 	if playerEnt == ecs.EntityNotFound {
 		panic(fmt.Sprintf("+%v", w))
 	}
-	playerViewshed := w.GetEntityComponent(ViewshedTag, playerEnt).(Viewshed)
+	playerViewshed := ecs.GetEntityComponent[Viewshed](w, playerEnt)
 
-	for e := range w.QueryEntitiesIter(Renderable{}, Position{}) {
-		pos := w.GetEntityComponent(PositionTag, e).(Position)
+	for e := range ecs.QueryEntitiesIter(w, Renderable{}, Position{}) {
+		pos := ecs.GetEntityComponent[Position](w, e)
 
 		if !playerViewshed.View.IsVisible(pos.X, pos.Y) {
 			continue
 		}
 
-		renderable := w.GetEntityComponent(RenderableTag, e).(Renderable)
+		renderable := ecs.GetEntityComponent[Renderable](w, e)
 		r.SetContent(pos.X+UIOffsetX, pos.Y+UIOffsetY, renderable.Glyph, nil, renderable.Style)
 	}
 }

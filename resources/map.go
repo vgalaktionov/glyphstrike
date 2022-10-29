@@ -74,6 +74,6 @@ func (m *Map) ApplyVerticalTunnel(y1, y2, x int) {
 
 const MapTag = ecs.RTag("Map")
 
-func (Map) RTag() ecs.RTag {
+func (*Map) RTag() ecs.RTag {
 	return MapTag
 }

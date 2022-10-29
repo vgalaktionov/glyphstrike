@@ -5,7 +5,9 @@ import (
 	"github.com/vgalaktionov/roguelike-go/draw"
 	"github.com/vgalaktionov/roguelike-go/ecs"
 	"github.com/vgalaktionov/roguelike-go/events"
-	"github.com/vgalaktionov/roguelike-go/resources"
+
+	//lint:ignore ST1001 dot importing resources makes it much more readable in this case
+	. "github.com/vgalaktionov/roguelike-go/resources"
 	"github.com/vgalaktionov/roguelike-go/util"
 )
 
@@ -18,9 +20,9 @@ type consoleBuffer struct {
 // Console system runs in separate goroutine (as eventsystem) and processes ConsoleEvent messages,
 // writing the last n messages to the screen.
 func Console(w *ecs.World) {
-	ch := w.GetEventChannel(events.ConsoleEventTag)
+	ch := ecs.GetEventChannel[events.ConsoleEvent](w)
 	cb := consoleBuffer{}
-	r := w.GetResource(resources.RendererTag).(*resources.Renderer)
+	r := ecs.GetResource[*Renderer](w)
 
 	_, maxY := r.Size()
 	// loop forever, as we run in background

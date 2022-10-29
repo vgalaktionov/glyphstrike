@@ -10,14 +10,14 @@ import (
 
 // ProcessMonsterAI simulates monster behaviour
 func ProcessMonsterAI(w *ecs.World) {
-	player := w.QueryEntitiesSingle(Player{}, Position{})
-	playerPos := w.GetEntityComponent(PositionTag, player).(Position)
+	player := ecs.QueryEntitiesSingle(w, Player{}, Position{})
+	playerPos := ecs.GetEntityComponent[Position](w, player)
 
-	for e := range w.QueryEntitiesIter(Position{}, Viewshed{}, MonsterAI{}) {
-		vs := w.GetEntityComponent(ViewshedTag, e).(Viewshed)
+	for e := range ecs.QueryEntitiesIter(w, Position{}, Viewshed{}, MonsterAI{}) {
+		vs := ecs.GetEntityComponent[Viewshed](w, e)
 		if vs.View.IsVisible(playerPos.X, playerPos.Y) {
 			msg := "Monster shouts insults."
-			w.DispatchEvent(events.ConsoleEvent{Message: msg})
+			ecs.DispatchEvent(w, events.ConsoleEvent{Message: msg})
 		}
 	}
 }

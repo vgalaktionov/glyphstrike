@@ -26,11 +26,11 @@ func ClearMap(r draw.Screen) {
 
 // RenderMap system is responsible for rendering the map, taking into account player visibility.
 func RenderMap(w *ecs.World) {
-	m := w.GetResource(MapTag).(*Map)
-	r := w.GetResource(RendererTag).(*Renderer)
+	m := ecs.GetResource[*Map](w)
+	r := ecs.GetResource[*Renderer](w)
 
-	for e := range w.QueryEntitiesIter(Player{}, Viewshed{}) {
-		viewshed := w.GetEntityComponent(ViewshedTag, e).(Viewshed)
+	for e := range ecs.QueryEntitiesIter(w, Player{}, Viewshed{}) {
+		viewshed := ecs.GetEntityComponent[Viewshed](w, e)
 
 		for x, col := range m.Tiles {
 			renderX := x + UIOffsetX

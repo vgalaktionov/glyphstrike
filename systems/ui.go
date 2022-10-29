@@ -15,7 +15,7 @@ const title = "☄️ Glyphstrike"
 // UI system render all elements besides map and console to the screen.
 // It runs as a normal blocking system and updates once per tick.
 func UI(w *ecs.World) {
-	r := w.GetResource(resources.RendererTag).(*resources.Renderer)
+	r := ecs.GetResource[*resources.Renderer](w)
 	maxX, maxY := r.Size()
 	draw.DrawBox(r, 0, 0, UIOffsetX, maxY-1, tcell.StyleDefault, "")
 

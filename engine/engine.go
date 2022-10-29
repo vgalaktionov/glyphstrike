@@ -31,16 +31,16 @@ func NewEngine() *Engine {
 
 	screen := draw.NewConsoleRenderer()
 
-	world := ecs.NewWorld()
+	w := ecs.NewWorld()
 
-	world.RegisterSystem(systems.HandlePlayerInput)
-	world.RegisterSystem(systems.UpdateVisibility)
-	world.RegisterSystem(systems.ProcessMonsterAI)
-	world.RegisterEventSystem(systems.Console)
-	world.RegisterEvent(events.ConsoleEvent{})
-	world.RegisterSystem(systems.RenderMap)
-	world.RegisterSystem(systems.Render)
-	world.RegisterSystem(systems.UI)
+	ecs.RegisterEventSystem(w, systems.Console, events.ConsoleEvent{})
+
+	ecs.RegisterSystem(w, systems.HandlePlayerInput)
+	ecs.RegisterSystem(w, systems.UpdateVisibility)
+	ecs.RegisterSystem(w, systems.ProcessMonsterAI)
+	ecs.RegisterSystem(w, systems.RenderMap)
+	ecs.RegisterSystem(w, systems.Render)
+	ecs.RegisterSystem(w, systems.UI)
 
 	screenX, screenY := screen.Size()
 	mapX := screenX - systems.UIOffsetX
@@ -48,11 +48,12 @@ func NewEngine() *Engine {
 
 	m := systems.NewMapRoomsAndCorridors(mapX, mapY)
 
-	world.AddResource(m)
-	world.AddResource(&resources.Renderer{ConsoleRenderer: screen})
+	ecs.AddResource(w, m)
+	ecs.AddResource(w, &resources.Renderer{ConsoleRenderer: screen})
 
 	playerX, playerY := m.Rooms[0].Center()
-	world.AddEntity(
+	ecs.AddEntity(
+		w,
 		components.Player{},
 		components.Position{X: playerX, Y: playerY},
 		components.Renderable{
@@ -74,14 +75,15 @@ func NewEngine() *Engine {
 			glyph = 'o' // orc
 		}
 
-		world.AddEntity(
+		ecs.AddEntity(
+			w,
 			components.Position{X: x, Y: y},
 			components.Renderable{Glyph: glyph, Style: tcell.StyleDefault.Foreground(tcell.ColorRed.TrueColor())},
 			components.Viewshed{Radius: 8, View: fov.New()},
 			components.MonsterAI{},
 		)
 	}
-	return &Engine{world, screen}
+	return &Engine{w, screen}
 }
 
 // EngineLogger retains a private reference to the Engine
@@ -91,7 +93,7 @@ type EngineLogger struct {
 
 // Write implements the io.Writer interface for the console logging system
 func (e *EngineLogger) Write(msg []byte) (int, error) {
-	e.engine.ECS.DispatchEvent(events.ConsoleEvent{Message: string(msg)})
+	ecs.DispatchEvent(e.engine.ECS, events.ConsoleEvent{Message: string(msg)})
 	return len(msg), nil
 }
 
@@ -102,7 +104,7 @@ func (e *Engine) Logger() io.Writer {
 
 // Run is the entrypoint into the engine. It kicks off background (event) systems and starts the game loop.
 func (e *Engine) Run() {
-	e.ECS.RunEventSystems(e.Renderer)
+	ecs.RunEventSystems(e.ECS)
 
 	for {
 		e.tick()
@@ -113,6 +115,6 @@ func (e *Engine) Run() {
 // all blocking systems and flushes the terminal buffer to screen.
 func (e *Engine) tick() {
 	systems.ClearMap(e.Renderer)
-	e.ECS.RunSystems(e.Renderer)
+	ecs.RunSystems(e.ECS)
 	e.Renderer.Show()
 }
