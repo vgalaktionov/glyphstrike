@@ -1,6 +1,7 @@
 package game
 
 import (
+	"fmt"
 	"io"
 	"math/rand"
 	"time"
@@ -61,6 +62,7 @@ func NewGame() *Game {
 			Style: tcell.StyleDefault.Foreground(tcell.ColorYellow.TrueColor()).Background(tcell.ColorBlack.TrueColor()),
 		},
 		components.Viewshed{Radius: 8, View: fov.New()},
+		components.Name{Str: "Player"},
 	)
 
 	for i := 1; i < len(m.Rooms); i++ {
@@ -81,6 +83,7 @@ func NewGame() *Game {
 			components.Renderable{Glyph: glyph, Style: tcell.StyleDefault.Foreground(tcell.ColorRed.TrueColor())},
 			components.Viewshed{Radius: 8, View: fov.New()},
 			components.MonsterAI{},
+			components.Name{Str: fmt.Sprintf("Monster #%d", i)},
 		)
 	}
 	return &Game{w, screen}
