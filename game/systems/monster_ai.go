@@ -11,16 +11,21 @@ import (
 
 // ProcessMonsterAI simulates monster behaviour
 func ProcessMonsterAI(w *ecs.World) {
+	gs := ecs.GetResource[resources.GameState](w)
+	if gs != resources.MonsterTurn {
+		return
+	}
+
 	player, err := ecs.QueryEntitiesSingle(w, Player{}, Position{})
 	// If we don't have a player entity, we should bail out (until death is implemented)
 	if err != nil {
 		log.Fatalln("no player found")
 	}
 	playerPos := ecs.GetEntityComponent[Position](w, player)
-	m := ecs.GetResource[*resources.Map](w)
+	m := ecs.GetResource[resources.Map](w)
 	g := m.GetGrid()
 
-	for e := range ecs.QueryEntitiesIter(w, Position{}, Viewshed{}, MonsterAI{}, Name{}) {
+	for e := range ecs.QueryEntitiesIter(w, Position{}, Viewshed{}, MonsterAI{}, Name("")) {
 		vs := ecs.GetEntityComponent[Viewshed](w, e)
 		name := ecs.GetEntityComponent[Name](w, e)
 		pos := ecs.GetEntityComponent[Position](w, e)
@@ -28,7 +33,7 @@ func ProcessMonsterAI(w *ecs.World) {
 		dist := util.Distance(pos.X, pos.Y, playerPos.X, playerPos.Y)
 		if dist < 1.5 {
 			// attack goes here
-			log.Printf("%s shouts insults.", name.Str)
+			log.Printf("%s shouts insults.", name)
 			continue
 		}
 
@@ -37,7 +42,7 @@ func ProcessMonsterAI(w *ecs.World) {
 			if path == nil || path.Length() < 2 {
 				continue
 			}
-			if nextCell := path.Next(); nextCell != nil {
+			if nextCell := path.Next(); nextCell != nil && !(nextCell.X == playerPos.X && nextCell.Y == playerPos.Y) {
 				ecs.SetEntityComponent(w, Position{X: nextCell.X, Y: nextCell.Y}, e)
 			}
 		}

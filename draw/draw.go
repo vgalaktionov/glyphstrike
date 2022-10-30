@@ -14,8 +14,7 @@ type Screen interface {
 	Show()
 	Size() (height int, width int)
 	SetContent(x, y int, primary rune, combining []rune, style tcell.Style)
-	ShowCursor(x, y int)
-	Fini()
+	CleanUp()
 }
 
 // DrawStr draws a single line of text to the screen.

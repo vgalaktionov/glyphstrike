@@ -11,10 +11,12 @@ import (
 )
 
 // HandlePlayerInput processes keyboard/mouse input and resize events.
-// By running as a blocking system, it serves a dual purpose of providing a turn-based game loop.
-// (I.e. all foreground system only process a single tick before pausing and waiting for player input.)
 func HandlePlayerInput(w *ecs.World) {
-	r := ecs.GetResource[*resources.Renderer](w)
+	gs := ecs.GetResource[resources.GameState](w)
+	if gs != resources.PlayerTurn {
+		return
+	}
+	r := ecs.GetResource[resources.Renderer](w)
 	event := r.PollEvent()
 	for e := range ecs.QueryEntitiesIter(w, Player{}, Position{}) {
 		playerPos := ecs.GetEntityComponent[Position](w, e)
@@ -25,11 +27,8 @@ func HandlePlayerInput(w *ecs.World) {
 
 		case *tcell.EventKey:
 			if ev.Key() == tcell.KeyEscape || ev.Key() == tcell.KeyCtrlC {
-				r.Clear()
-				r.ShowCursor(0, 0)
-				r.Fini()
+				r.CleanUp()
 				os.Exit(0)
-				break
 			}
 
 			var deltaX, deltaY int
@@ -53,7 +52,7 @@ func HandlePlayerInput(w *ecs.World) {
 			destX := playerPos.X + deltaX
 			destY := playerPos.Y + deltaY
 
-			m := ecs.GetResource[*resources.Map](w)
+			m := ecs.GetResource[resources.Map](w)
 			if !m.BlockedTiles[destX][destY] {
 				ecs.SetEntityComponent(w, Position{X: destX, Y: destY}, e)
 			}

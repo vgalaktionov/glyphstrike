@@ -9,9 +9,8 @@ type Resource interface {
 	RTag() RTag
 }
 
-
-// AddResource registers a mutable singleton resource.
-func AddResource(w *World, r Resource) {
+// SetResource sets a "global" singleton resource.
+func SetResource(w *World, r Resource) {
 	w.resources[r.RTag()] = r
 }
 

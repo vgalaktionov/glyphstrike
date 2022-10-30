@@ -10,7 +10,7 @@ import (
 
 // Render system handles drawing non-map renderable entities to the screen, taking visibility into account.
 func Render(w *ecs.World) {
-	r := ecs.GetResource[*resources.Renderer](w)
+	r := ecs.GetResource[resources.Renderer](w)
 
 	playerEnt, err := ecs.QueryEntitiesSingle(w, Player{})
 	// If we don't have a player entity, we should bail out (until death is implemented)

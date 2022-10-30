@@ -188,6 +188,6 @@ func (m *Map) GetGrid() *paths.Grid {
 
 const MapTag = ecs.RTag("Map")
 
-func (*Map) RTag() ecs.RTag {
+func (Map) RTag() ecs.RTag {
 	return MapTag
 }

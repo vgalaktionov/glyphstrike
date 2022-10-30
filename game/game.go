@@ -36,13 +36,14 @@ func NewGame() *Game {
 
 	ecs.RegisterEventSystem(w, systems.Console, events.ConsoleEvent{})
 
+	ecs.RegisterSystem(w, systems.UpdateVisibility)
 	ecs.RegisterSystem(w, systems.MapIndexing)
 	ecs.RegisterSystem(w, systems.HandlePlayerInput)
-	ecs.RegisterSystem(w, systems.UpdateVisibility)
 	ecs.RegisterSystem(w, systems.ProcessMonsterAI)
 	ecs.RegisterSystem(w, systems.RenderMap)
 	ecs.RegisterSystem(w, systems.Render)
 	ecs.RegisterSystem(w, systems.UI)
+	ecs.RegisterSystem(w, systems.UpdateTurn)
 
 	screenX, screenY := screen.Size()
 	mapX := screenX - systems.UIOffsetX
@@ -50,8 +51,9 @@ func NewGame() *Game {
 
 	m := resources.NewMapRoomsAndCorridors(mapX, mapY)
 
-	ecs.AddResource(w, m)
-	ecs.AddResource(w, &resources.Renderer{ConsoleRenderer: screen})
+	ecs.SetResource(w, *m)
+	ecs.SetResource(w, resources.Renderer{ConsoleRenderer: screen})
+	ecs.SetResource(w, resources.PreRun)
 
 	playerX, playerY := m.Rooms[0].Center()
 	ecs.AddEntity(
@@ -63,7 +65,7 @@ func NewGame() *Game {
 			Style: tcell.StyleDefault.Foreground(tcell.ColorYellow.TrueColor()).Background(tcell.ColorBlack.TrueColor()),
 		},
 		components.Viewshed{Radius: 8, View: fov.New()},
-		components.Name{Str: "Player"},
+		components.Name("Player"),
 	)
 
 	for i := 1; i < len(m.Rooms); i++ {
@@ -84,7 +86,7 @@ func NewGame() *Game {
 			components.Renderable{Glyph: glyph, Style: tcell.StyleDefault.Foreground(tcell.ColorRed.TrueColor())},
 			components.Viewshed{Radius: 8, View: fov.New()},
 			components.MonsterAI{},
-			components.Name{Str: fmt.Sprintf("Monster #%d", i)},
+			components.Name(fmt.Sprintf("Monster #%d", i)),
 			components.BlocksTile{},
 		)
 	}
@@ -107,6 +109,11 @@ func (g *Game) Logger() io.Writer {
 	return &GameLogger{game: g}
 }
 
+// CleanUp performs any necessary cleanup actions on crash or exit.
+func (g *Game) CleanUp() {
+	g.Renderer.CleanUp()
+}
+
 // Run is the entrypoint into the Game. It kicks off background (event) systems and starts the game loop.
 func (g *Game) Run() {
 	ecs.RunEventSystems(g.ECS)
@@ -119,7 +126,6 @@ func (g *Game) Run() {
 // tick is called on every tick of the game loop. It clears the map portion of the screen, processes
 // all blocking systems and flushes the terminal buffer to screen.
 func (g *Game) tick() {
-	systems.ClearMap(g.Renderer)
 	ecs.RunSystems(g.ECS)
 	g.Renderer.Show()
 }

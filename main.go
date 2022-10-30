@@ -9,14 +9,13 @@ import (
 func main() {
 	g := game.NewGame()
 
+	// Hook up stdlib logging output to the game window console
 	log.SetFlags(0)
 	log.SetOutput(g.Logger())
 
 	quit := func() {
 		maybePanic := recover()
-		g.Renderer.Clear()
-		g.Renderer.ShowCursor(0, 0)
-		g.Renderer.Fini()
+		g.CleanUp()
 		if maybePanic != nil {
 			panic(maybePanic)
 		}

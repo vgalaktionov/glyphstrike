@@ -11,6 +11,6 @@ type Renderer struct {
 
 const RendererTag = ecs.RTag("Renderer")
 
-func (*Renderer) RTag() ecs.RTag {
+func (Renderer) RTag() ecs.RTag {
 	return RendererTag
 }

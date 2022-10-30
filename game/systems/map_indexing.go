@@ -8,7 +8,7 @@ import (
 
 // MapIndexing deals with updating map state based on the ECS data
 func MapIndexing(w *ecs.World) {
-	m := ecs.GetResource[*resources.Map](w)
+	m := ecs.GetResource[resources.Map](w)
 	m.PopulateBlocked()
 
 	for e := range ecs.QueryEntitiesIter(w, Position{}, BlocksTile{}) {

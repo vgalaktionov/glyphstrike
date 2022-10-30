@@ -24,3 +24,9 @@ func NewConsoleRenderer() *ConsoleRenderer {
 	screen.Clear()
 	return &ConsoleRenderer{screen}
 }
+
+func (cr *ConsoleRenderer) CleanUp() {
+	cr.Clear()
+	cr.ShowCursor(0, 0)
+	cr.Fini()
+}
