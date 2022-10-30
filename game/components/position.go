@@ -7,8 +7,6 @@ type Position struct {
 	X, Y int
 }
 
-const PositionTag = ecs.CTag("Position")
-
 func (Position) CTag() ecs.CTag {
-	return PositionTag
+	return ecs.CTag("Position")
 }

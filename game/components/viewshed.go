@@ -11,8 +11,6 @@ type Viewshed struct {
 	View   *fov.View
 }
 
-const ViewshedTag = ecs.CTag("Viewshed")
-
 func (Viewshed) CTag() ecs.CTag {
-	return ViewshedTag
+	return ecs.CTag("Viewshed")
 }

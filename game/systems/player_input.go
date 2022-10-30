@@ -6,10 +6,8 @@ import (
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/vgalaktionov/roguelike-go/ecs"
-	"github.com/vgalaktionov/roguelike-go/game/resources"
-
-	//lint:ignore ST1001 dot importing components makes it much more readable in this case
 	. "github.com/vgalaktionov/roguelike-go/game/components"
+	"github.com/vgalaktionov/roguelike-go/game/resources"
 )
 
 // HandlePlayerInput processes keyboard/mouse input and resize events.
@@ -55,9 +53,8 @@ func HandlePlayerInput(w *ecs.World) {
 			destX := playerPos.X + deltaX
 			destY := playerPos.Y + deltaY
 
-			// Walls are solid
 			m := ecs.GetResource[*resources.Map](w)
-			if !m.IsOpaque(destX, destY) {
+			if !m.BlockedTiles[destX][destY] {
 				ecs.SetEntityComponent(w, Position{X: destX, Y: destY}, e)
 			}
 

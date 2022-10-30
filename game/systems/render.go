@@ -1,10 +1,9 @@
 package systems
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/vgalaktionov/roguelike-go/ecs"
-	//lint:ignore ST1001 dot importing components makes it much more readable in this case
 	. "github.com/vgalaktionov/roguelike-go/game/components"
 	"github.com/vgalaktionov/roguelike-go/game/resources"
 )
@@ -13,9 +12,10 @@ import (
 func Render(w *ecs.World) {
 	r := ecs.GetResource[*resources.Renderer](w)
 
-	playerEnt := ecs.QueryEntitiesSingle(w, Player{})
-	if playerEnt == ecs.EntityNotFound {
-		panic(fmt.Sprintf("+%v", w))
+	playerEnt, err := ecs.QueryEntitiesSingle(w, Player{})
+	// If we don't have a player entity, we should bail out (until death is implemented)
+	if err != nil {
+		log.Fatalln("no player found")
 	}
 	playerViewshed := ecs.GetEntityComponent[Viewshed](w, playerEnt)
 

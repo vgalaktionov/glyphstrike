@@ -11,8 +11,6 @@ type Renderable struct {
 	Style tcell.Style
 }
 
-const RenderableTag = ecs.CTag("Renderable")
-
 func (Renderable) CTag() ecs.CTag {
-	return RenderableTag
+	return ecs.CTag("Renderable")
 }

@@ -10,6 +10,9 @@ github.com/norendren/go-fov v1.0.1 h1:EHdFEYmYe2eVVaNqUucSCcfYP8LQlkGyRO6np2eKMg
 github.com/norendren/go-fov v1.0.1/go.mod h1:1siuqzljLKCAqCBlPhOWCSPmR+vx7y6i2tvqSfYX1v4=
 github.com/rivo/uniseg v0.2.0 h1:S1pD9weZBuJdFmowNwbpi7BJ8TNftyUImj/0WQi72jY=
 github.com/rivo/uniseg v0.2.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
+github.com/solarlune/paths v0.0.0-20220620061549-ff4d7ca73cb7 h1:ENCywHYmGB5V+Eqg9VATbdWetzHn52lexTluG4T5AtM=
+github.com/solarlune/paths v0.0.0-20220620061549-ff4d7ca73cb7/go.mod h1:C5Tmb7Ct4izNi5tAKM0aj5IoUOv1FnCmN8lk/ksa0Hk=
+github.com/veandco/go-sdl2 v0.4.1/go.mod h1:FB+kTpX9YTE+urhYiClnRzpOXbiWgaU3+5F2AB78DPg=
 golang.org/x/sys v0.0.0-20201119102817-f84b799fce68/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20220318055525-2edf467146b5/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8 h1:0A+M6Uqn+Eje4kHMK80dtF3JCXC4ykBgQG4Fe06QRhQ=

@@ -7,8 +7,6 @@ type Name struct {
 	Str string
 }
 
-const NameTag = ecs.CTag("Name")
-
 func (Name) CTag() ecs.CTag {
-	return NameTag
+	return ecs.CTag("Name")
 }

@@ -1,5 +1,9 @@
 package ecs
 
+import (
+	"fmt"
+)
+
 // Entity is an ID that can be used to retrieve associated components.
 type Entity int
 
@@ -29,7 +33,7 @@ func RemoveEntity(w *World, ent Entity) {
 const EntityNotFound = Entity(-1)
 
 // QueryEntitiesSingle takes templates (empty components) and returns the first entity with these components, or -1.
-func QueryEntitiesSingle(w *World, templates ...Component) Entity {
+func QueryEntitiesSingle(w *World, templates ...Component) (Entity, error) {
 
 	for e := range w.entities {
 		hasAll := true
@@ -41,15 +45,15 @@ func QueryEntitiesSingle(w *World, templates ...Component) Entity {
 			}
 		}
 		if hasAll {
-			return e
+			return e, nil
 		}
 	}
-	return EntityNotFound
+	return EntityNotFound, fmt.Errorf("did not find an entity with components +%v", templates)
 }
 
 // QueryEntitiesIter takes templates (empty components) and returns an iterable channel of entities with these components.
 func QueryEntitiesIter(w *World, templates ...Component) chan Entity {
-	ch := make(chan Entity)
+	ch := make(chan Entity, len(w.entities))
 	go func() {
 		defer close(ch)
 

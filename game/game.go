@@ -36,6 +36,7 @@ func NewGame() *Game {
 
 	ecs.RegisterEventSystem(w, systems.Console, events.ConsoleEvent{})
 
+	ecs.RegisterSystem(w, systems.MapIndexing)
 	ecs.RegisterSystem(w, systems.HandlePlayerInput)
 	ecs.RegisterSystem(w, systems.UpdateVisibility)
 	ecs.RegisterSystem(w, systems.ProcessMonsterAI)
@@ -47,7 +48,7 @@ func NewGame() *Game {
 	mapX := screenX - systems.UIOffsetX
 	mapY := screenY - systems.UIOffsetY
 
-	m := systems.NewMapRoomsAndCorridors(mapX, mapY)
+	m := resources.NewMapRoomsAndCorridors(mapX, mapY)
 
 	ecs.AddResource(w, m)
 	ecs.AddResource(w, &resources.Renderer{ConsoleRenderer: screen})
@@ -84,6 +85,7 @@ func NewGame() *Game {
 			components.Viewshed{Radius: 8, View: fov.New()},
 			components.MonsterAI{},
 			components.Name{Str: fmt.Sprintf("Monster #%d", i)},
+			components.BlocksTile{},
 		)
 	}
 	return &Game{w, screen}
