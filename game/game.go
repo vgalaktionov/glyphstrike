@@ -51,7 +51,7 @@ func NewGame() *Game {
 
 	m := resources.NewMapRoomsAndCorridors(mapX, mapY)
 
-	ecs.SetResource(w, *m)
+	ecs.SetResource(w, m)
 	ecs.SetResource(w, resources.Renderer{ConsoleRenderer: screen})
 	ecs.SetResource(w, resources.PreRun)
 
@@ -61,11 +61,17 @@ func NewGame() *Game {
 		components.Player{},
 		components.Position{X: playerX, Y: playerY},
 		components.Renderable{
-			Glyph: '⊛',
+			Glyph: '@',
 			Style: tcell.StyleDefault.Foreground(tcell.ColorYellow.TrueColor()).Background(tcell.ColorBlack.TrueColor()),
 		},
 		components.Viewshed{Radius: 8, View: fov.New()},
 		components.Name("Player"),
+		components.CombatStats{
+			MaxHP:   30,
+			HP:      30,
+			Defense: 2,
+			Power:   5,
+		},
 	)
 
 	for i := 1; i < len(m.Rooms); i++ {
@@ -88,6 +94,12 @@ func NewGame() *Game {
 			components.MonsterAI{},
 			components.Name(fmt.Sprintf("Monster #%d", i)),
 			components.BlocksTile{},
+			components.CombatStats{
+				MaxHP:   16,
+				HP:      16,
+				Defense: 1,
+				Power:   4,
+			},
 		)
 	}
 	return &Game{w, screen}

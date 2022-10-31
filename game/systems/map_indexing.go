@@ -8,11 +8,17 @@ import (
 
 // MapIndexing deals with updating map state based on the ECS data
 func MapIndexing(w *ecs.World) {
-	m := ecs.GetResource[resources.Map](w)
+	m := ecs.GetResource[*resources.Map](w)
 	m.PopulateBlocked()
+	m.ClearContents()
 
 	for e := range ecs.QueryEntitiesIter(w, Position{}, BlocksTile{}) {
 		pos := ecs.GetEntityComponent[Position](w, e)
-		m.BlockedTiles[pos.X][pos.Y] = true
+
+		if ecs.HasEntityComponent[BlocksTile](w, e) {
+			m.BlockedTiles[pos.X][pos.Y] = true
+		}
+
+		m.TileContents[pos.X][pos.Y] = append(m.TileContents[pos.X][pos.Y], e)
 	}
 }

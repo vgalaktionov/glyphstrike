@@ -24,6 +24,7 @@ type Map struct {
 	Rooms         []util.Rect
 	RevealedTiles [][]bool
 	BlockedTiles  [][]bool
+	TileContents  [][][]ecs.Entity
 }
 
 // NewEmptyMap initializes a map with floor tiles.
@@ -33,11 +34,17 @@ func NewEmptyMap(mapWidth, mapHeight int) *Map {
 		Width: mapWidth, Height: mapHeight,
 		RevealedTiles: make([][]bool, mapWidth),
 		BlockedTiles:  make([][]bool, mapWidth),
+		TileContents:  make([][][]ecs.Entity, mapWidth),
 	}
-	for i := 0; i < mapWidth; i++ {
-		m.Tiles[i] = make([]TileType, m.Height)
-		m.RevealedTiles[i] = make([]bool, m.Height)
-		m.BlockedTiles[i] = make([]bool, m.Height)
+	for x := 0; x < mapWidth; x++ {
+		m.Tiles[x] = make([]TileType, m.Height)
+		m.RevealedTiles[x] = make([]bool, m.Height)
+		m.BlockedTiles[x] = make([]bool, m.Height)
+		m.TileContents[x] = make([][]ecs.Entity, m.Height)
+
+		for y := 0; y < mapHeight; y++ {
+			m.TileContents[x][y] = nil
+		}
 	}
 	return m
 }
@@ -118,6 +125,16 @@ func NewMapRoomsAndCorridors(mapWidth, mapHeight int) *Map {
 	return m
 }
 
+// ClearContents resets map tile contents.
+func (m *Map) ClearContents() {
+	for x := 0; x < m.Width; x++ {
+		for y := 0; y < m.Height; y++ {
+			m.TileContents[x][y] = nil
+		}
+	}
+
+}
+
 func (m *Map) PopulateBlocked() {
 	for x := range m.BlockedTiles {
 		for y := range m.BlockedTiles[x] {
@@ -191,6 +208,6 @@ func (m *Map) GetGridFor(x, y int) *paths.Grid {
 
 const MapTag = ecs.RTag("Map")
 
-func (Map) RTag() ecs.RTag {
+func (*Map) RTag() ecs.RTag {
 	return MapTag
 }

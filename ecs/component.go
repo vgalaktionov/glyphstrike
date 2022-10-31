@@ -9,7 +9,13 @@ type Component interface {
 	CTag() CTag
 }
 
-// GetEntityComponent retries a component by tag and entity id.
+// HasEntityComponent checks for existence of a component by entity id.
+func HasEntityComponent[C Component](w *World, ent Entity) bool {
+	_, ok := w.components[(*new(C)).CTag()][ent]
+	return ok
+}
+
+// GetEntityComponent retrieves a component by entity id.
 // The result (if retrieved through the QueryEntities family of functions) is safe to cast to its intended type.
 func GetEntityComponent[C Component](w *World, ent Entity) C {
 	return w.components[(*new(C)).CTag()][ent].(C)

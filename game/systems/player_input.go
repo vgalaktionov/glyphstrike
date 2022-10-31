@@ -22,69 +22,85 @@ func HandlePlayerInput(w *ecs.World) {
 
 	event := r.PollEvent()
 
-	for e := range ecs.QueryEntitiesIter(w, Player{}, Position{}) {
-		playerPos := ecs.GetEntityComponent[Position](w, e)
+	playerEnt, err := ecs.QueryEntitiesSingle(w, Player{}, Position{})
+	if err != nil {
+		log.Fatal("no player found")
+	}
 
-		switch ev := event.(type) {
-		case *tcell.EventResize:
-			r.Sync()
+	switch ev := event.(type) {
+	case *tcell.EventResize:
+		r.Sync()
 
-		case *tcell.EventKey:
-			if ev.Key() == tcell.KeyEscape || ev.Key() == tcell.KeyCtrlC {
-				r.CleanUp()
-				os.Exit(0)
-			}
-
-			chord := maybeChord(r)
-
-			var deltaX, deltaY int
-
-			switch true {
-			case ev.Key() == tcell.KeyUpLeft, isLeft(ev) && isUp(chord), isUp(ev) && isLeft(chord):
-				deltaX--
-				deltaY--
-			case ev.Key() == tcell.KeyUpRight, isRight(ev) && isUp(chord), isUp(ev) && isRight(chord):
-				deltaX++
-				deltaY--
-			case ev.Key() == tcell.KeyDownLeft, isLeft(ev) && isDown(chord), isDown(ev) && isLeft(chord):
-				deltaX--
-				deltaY++
-			case ev.Key() == tcell.KeyDownRight, isRight(ev) && isDown(chord), isDown(ev) && isRight(chord):
-				deltaX++
-				deltaY++
-			case isLeft(ev):
-				deltaX--
-			case isRight(ev):
-				deltaX++
-			case isUp(ev):
-				deltaY--
-			case isDown(ev):
-				deltaY++
-
-			case tcell.KeyUpLeft == ev.Key(), tcell.KeyUpRight == ev.Key(), tcell.KeyDownRight == ev.Key(), tcell.KeyDownLeft == ev.Key():
-				log.Print("Diagonal key pressed")
-			default:
-				log.Printf("Unbound key pressed: %b", ev.Rune())
-			}
-
-			destX := playerPos.X + deltaX
-			destY := playerPos.Y + deltaY
-
-			m := ecs.GetResource[resources.Map](w)
-			if !m.BlockedTiles[destX][destY] {
-				ecs.SetEntityComponent(w, Position{X: destX, Y: destY}, e)
-			}
-
-		case *tcell.EventMouse:
-			// mouseX, mouseY := ev.Position()
-
-			// 		switch ev.Buttons() {
-			// 		case tcell.Button1, tcell.Button2:
-			// 		case tcell.ButtonNone:
-			// 		}
-			// 	}
-			// }
+	case *tcell.EventKey:
+		if ev.Key() == tcell.KeyEscape || ev.Key() == tcell.KeyCtrlC {
+			r.CleanUp()
+			os.Exit(0)
 		}
+
+		chord := maybeChord(r)
+
+		var deltaX, deltaY int
+
+		switch true {
+		case ev.Key() == tcell.KeyUpLeft, isLeft(ev) && isUp(chord), isUp(ev) && isLeft(chord):
+			deltaX--
+			deltaY--
+		case ev.Key() == tcell.KeyUpRight, isRight(ev) && isUp(chord), isUp(ev) && isRight(chord):
+			deltaX++
+			deltaY--
+		case ev.Key() == tcell.KeyDownLeft, isLeft(ev) && isDown(chord), isDown(ev) && isLeft(chord):
+			deltaX--
+			deltaY++
+		case ev.Key() == tcell.KeyDownRight, isRight(ev) && isDown(chord), isDown(ev) && isRight(chord):
+			deltaX++
+			deltaY++
+		case isLeft(ev):
+			deltaX--
+		case isRight(ev):
+			deltaX++
+		case isUp(ev):
+			deltaY--
+		case isDown(ev):
+			deltaY++
+
+		case tcell.KeyUpLeft == ev.Key(), tcell.KeyUpRight == ev.Key(), tcell.KeyDownRight == ev.Key(), tcell.KeyDownLeft == ev.Key():
+			log.Print("Diagonal key pressed")
+		default:
+			log.Printf("Unbound key pressed: %b", ev.Rune())
+		}
+
+		tryMovePlayer(w, playerEnt, deltaX, deltaY)
+
+	case *tcell.EventMouse:
+		// mouseX, mouseY := ev.Position()
+
+		// 		switch ev.Buttons() {
+		// 		case tcell.Button1, tcell.Button2:
+		// 		case tcell.ButtonNone:
+		// 		}
+		// 	}
+		// }
+	}
+
+}
+
+// tryMovePlayer handles player movement and attack input (via bump to fight)
+func tryMovePlayer(w *ecs.World, playerEnt ecs.Entity, deltaX, deltaY int) {
+	playerPos := ecs.GetEntityComponent[Position](w, playerEnt)
+	destX := playerPos.X + deltaX
+	destY := playerPos.Y + deltaY
+
+	m := ecs.GetResource[*resources.Map](w)
+
+	for _, potentialTarget := range m.TileContents[destX][destY] {
+		if ecs.HasEntityComponent[CombatStats](w, ecs.Entity(potentialTarget)) {
+			log.Print("From Hell's Heart, I stab thee!")
+			return
+		}
+	}
+
+	if !m.BlockedTiles[destX][destY] {
+		ecs.SetEntityComponent(w, Position{X: destX, Y: destY}, playerEnt)
 	}
 }
 

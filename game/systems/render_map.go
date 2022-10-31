@@ -24,7 +24,7 @@ func clearMap(r draw.Screen) {
 
 // RenderMap system is responsible for rendering the map, taking into account player visibility.
 func RenderMap(w *ecs.World) {
-	m := ecs.GetResource[Map](w)
+	m := ecs.GetResource[*Map](w)
 	r := ecs.GetResource[Renderer](w)
 
 	clearMap(r)

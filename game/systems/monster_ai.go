@@ -22,7 +22,7 @@ func ProcessMonsterAI(w *ecs.World) {
 		log.Fatalln("no player found")
 	}
 	playerPos := ecs.GetEntityComponent[Position](w, player)
-	m := ecs.GetResource[resources.Map](w)
+	m := ecs.GetResource[*resources.Map](w)
 
 	for e := range ecs.QueryEntitiesIter(w, Position{}, Viewshed{}, MonsterAI{}, Name("")) {
 		vs := ecs.GetEntityComponent[Viewshed](w, e)
