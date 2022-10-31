@@ -6,7 +6,6 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/gdamore/tcell/v2"
 	"github.com/gdamore/tcell/v2/encoding"
 	"github.com/norendren/go-fov/fov"
 	"github.com/vgalaktionov/roguelike-go/draw"
@@ -30,7 +29,7 @@ func NewGame() *Game {
 	rand.Seed(time.Now().UnixNano())
 	encoding.Register()
 
-	screen := draw.NewConsoleRenderer()
+	screen := draw.NewScreen()
 
 	w := ecs.NewWorld()
 
@@ -60,7 +59,7 @@ func NewGame() *Game {
 	m := resources.NewMapRoomsAndCorridors(mapX, mapY)
 
 	ecs.SetResource(w, m)
-	ecs.SetResource(w, resources.Renderer{ConsoleRenderer: screen})
+	ecs.SetResource(w, resources.Renderer{screen})
 	ecs.SetResource(w, resources.PreRun)
 
 	playerX, playerY := m.Rooms[0].Center()
@@ -70,7 +69,7 @@ func NewGame() *Game {
 		components.Position{X: playerX, Y: playerY},
 		components.Renderable{
 			Glyph: '@',
-			Style: tcell.StyleDefault.Foreground(tcell.ColorYellow.TrueColor()).Background(tcell.ColorBlack.TrueColor()),
+			Style: draw.ColorFromPalette(draw.Yellow, draw.Black),
 		},
 		components.Viewshed{Radius: 8, View: fov.New()},
 		components.Name("Player"),
@@ -97,7 +96,7 @@ func NewGame() *Game {
 		ecs.AddEntity(
 			w,
 			components.Position{X: x, Y: y},
-			components.Renderable{Glyph: glyph, Style: tcell.StyleDefault.Foreground(tcell.ColorRed.TrueColor())},
+			components.Renderable{Glyph: glyph, Style: draw.ColorFromPalette(draw.Yellow, draw.Black)},
 			components.Viewshed{Radius: 8, View: fov.New()},
 			components.MonsterAI{},
 			components.Name(fmt.Sprintf("Monster #%d", i)),

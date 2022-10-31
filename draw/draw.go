@@ -2,39 +2,31 @@ package draw
 
 import (
 	"github.com/gdamore/tcell/v2"
-	"github.com/mattn/go-runewidth"
 )
 
 // Screen abstracts away the renderer (currently only tcell), to ease testing as well as
 // implementation of different rendering backends in the future.
 type Screen interface {
 	Sync()
-	PollEvent() tcell.Event
-	PostEvent(ev tcell.Event) error
+	PollEvent() ScreenEvent
+	PostEvent(ev ScreenEvent) error
 	Clear()
 	Show()
 	Size() (height int, width int)
-	SetContent(x, y int, primary rune, combining []rune, style tcell.Style)
+	SetCellContent(x, y int, primary rune, color Color)
 	CleanUp()
 }
 
-// DrawStr draws a single line of text to the screen.
-func DrawStr(r Screen, x, y int, style tcell.Style, str string) {
+// DrawStr draws a single line of text to the screen. This will not work correctly for combining characters.
+func DrawStr(r Screen, x, y int, color Color, str string) {
 	for _, c := range str {
-		var comb []rune
-		w := runewidth.RuneWidth(c)
-		if w == 0 {
-			comb = []rune{c}
-			c = ' '
-			w = 1
-		}
-		r.SetContent(x, y, c, comb, style)
-		x += w
+		r.SetCellContent(x, y, c, color)
+		x += 1
 	}
 }
 
 // DrawBox draws a rectangular box with the standard box drawing characters, and (optional) text contents.
-func DrawBox(r Screen, x1, y1, x2, y2 int, style tcell.Style, text string) {
+func DrawBox(r Screen, x1, y1, x2, y2 int, color Color, text string) {
 	if y2 < y1 {
 		y1, y2 = y2, y1
 	}
@@ -44,23 +36,23 @@ func DrawBox(r Screen, x1, y1, x2, y2 int, style tcell.Style, text string) {
 
 	// Draw borders
 	for col := x1; col <= x2; col++ {
-		r.SetContent(col, y1, tcell.RuneHLine, nil, style)
-		r.SetContent(col, y2, tcell.RuneHLine, nil, style)
+		r.SetCellContent(col, y1, tcell.RuneHLine, color)
+		r.SetCellContent(col, y2, tcell.RuneHLine, color)
 	}
 	for row := y1 + 1; row < y2; row++ {
-		r.SetContent(x1, row, tcell.RuneVLine, nil, style)
-		r.SetContent(x2, row, tcell.RuneVLine, nil, style)
+		r.SetCellContent(x1, row, tcell.RuneVLine, color)
+		r.SetCellContent(x2, row, tcell.RuneVLine, color)
 	}
 
 	// Only draw corners if necessary
 	if y1 != y2 && x1 != x2 {
-		r.SetContent(x1, y1, tcell.RuneULCorner, nil, style)
-		r.SetContent(x2, y1, tcell.RuneURCorner, nil, style)
-		r.SetContent(x1, y2, tcell.RuneLLCorner, nil, style)
-		r.SetContent(x2, y2, tcell.RuneLRCorner, nil, style)
+		r.SetCellContent(x1, y1, tcell.RuneULCorner, color)
+		r.SetCellContent(x2, y1, tcell.RuneURCorner, color)
+		r.SetCellContent(x1, y2, tcell.RuneLLCorner, color)
+		r.SetCellContent(x2, y2, tcell.RuneLRCorner, color)
 	}
 
-	DrawStr(r, x1+1, y1+1, style, text)
+	DrawStr(r, x1+1, y1+1, color, text)
 }
 
 var DEFAULT_STYLE tcell.Style = tcell.StyleDefault.Background(tcell.ColorBlack.TrueColor()).Foreground(tcell.ColorWhite.TrueColor())

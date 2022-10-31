@@ -1,7 +1,6 @@
 package systems
 
 import (
-	"github.com/gdamore/tcell/v2"
 	"github.com/vgalaktionov/roguelike-go/draw"
 	"github.com/vgalaktionov/roguelike-go/ecs"
 	"github.com/vgalaktionov/roguelike-go/game/resources"
@@ -17,7 +16,7 @@ const title = "☄️ Glyphstrike"
 func UI(w *ecs.World) {
 	r := ecs.GetResource[resources.Renderer](w)
 	maxX, maxY := r.Size()
-	draw.DrawBox(r, 0, 0, UIOffsetX, maxY-1, tcell.StyleDefault, "")
+	draw.DrawBox(r, 0, 0, UIOffsetX, maxY-1, draw.ColorFromPalette(draw.White, draw.Black), "")
 
-	draw.DrawStr(r, maxX/2-len(title)/2, 0, tcell.StyleDefault, title)
+	draw.DrawStr(r, maxX/2-len(title)/2, 0, draw.ColorFromPalette(draw.White, draw.Black), title)
 }

@@ -27,6 +27,6 @@ func Render(w *ecs.World) {
 		}
 
 		renderable := ecs.MustGetEntityComponent[Renderable](w, e)
-		r.SetContent(pos.X+UIOffsetX, pos.Y+UIOffsetY, renderable.Glyph, nil, renderable.Style)
+		r.SetCellContent(pos.X+UIOffsetX, pos.Y+UIOffsetY, renderable.Glyph, renderable.Style)
 	}
 }

@@ -5,7 +5,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/gdamore/tcell/v2"
 	"github.com/vgalaktionov/roguelike-go/draw"
 	"github.com/vgalaktionov/roguelike-go/ecs"
 	. "github.com/vgalaktionov/roguelike-go/game/components"
@@ -28,11 +27,11 @@ func HandlePlayerInput(w *ecs.World) {
 	}
 
 	switch ev := event.(type) {
-	case *tcell.EventResize:
+	case *draw.ResizeEvent:
 		r.Sync()
 
-	case *tcell.EventKey:
-		if ev.Key() == tcell.KeyEscape || ev.Key() == tcell.KeyCtrlC {
+	case *draw.KeyEvent:
+		if ev.Key == draw.KeyEscape || ev.Key == draw.KeyControlC {
 			r.CleanUp()
 			os.Exit(0)
 		}
@@ -42,16 +41,16 @@ func HandlePlayerInput(w *ecs.World) {
 		var deltaX, deltaY int
 
 		switch true {
-		case ev.Key() == tcell.KeyUpLeft, isLeft(ev) && isUp(chord), isUp(ev) && isLeft(chord):
+		case isLeft(ev) && isUp(chord), isUp(ev) && isLeft(chord):
 			deltaX--
 			deltaY--
-		case ev.Key() == tcell.KeyUpRight, isRight(ev) && isUp(chord), isUp(ev) && isRight(chord):
+		case isRight(ev) && isUp(chord), isUp(ev) && isRight(chord):
 			deltaX++
 			deltaY--
-		case ev.Key() == tcell.KeyDownLeft, isLeft(ev) && isDown(chord), isDown(ev) && isLeft(chord):
+		case isLeft(ev) && isDown(chord), isDown(ev) && isLeft(chord):
 			deltaX--
 			deltaY++
-		case ev.Key() == tcell.KeyDownRight, isRight(ev) && isDown(chord), isDown(ev) && isRight(chord):
+		case isRight(ev) && isDown(chord), isDown(ev) && isRight(chord):
 			deltaX++
 			deltaY++
 		case isLeft(ev):
@@ -63,15 +62,13 @@ func HandlePlayerInput(w *ecs.World) {
 		case isDown(ev):
 			deltaY++
 
-		case tcell.KeyUpLeft == ev.Key(), tcell.KeyUpRight == ev.Key(), tcell.KeyDownRight == ev.Key(), tcell.KeyDownLeft == ev.Key():
-			log.Print("Diagonal key pressed")
 		default:
-			log.Printf("Unbound key pressed: %b", ev.Rune())
+			log.Printf("Unbound key pressed: %b", ev.Rune)
 		}
 
 		tryMovePlayer(w, playerEnt, deltaX, deltaY)
 
-	case *tcell.EventMouse:
+	case *draw.MouseEvent:
 		// mouseX, mouseY := ev.Position()
 
 		// 		switch ev.Buttons() {
@@ -105,43 +102,43 @@ func tryMovePlayer(w *ecs.World, playerEnt ecs.Entity, deltaX, deltaY int) {
 }
 
 // isUp checks whether a key event represents a valid "up" key press.
-func isUp(keyEv *tcell.EventKey) bool {
+func isUp(keyEv *draw.KeyEvent) bool {
 	if keyEv == nil {
 		return false
 	}
-	return tcell.KeyUp == keyEv.Key() || (tcell.KeyRune == keyEv.Key() && keyEv.Rune() == 'w')
+	return draw.KeyUp == keyEv.Key || (draw.KeyRune == keyEv.Key && keyEv.Rune == 'w')
 }
 
 // isDown checks whether a key event represents a valid "down" key press.
-func isDown(keyEv *tcell.EventKey) bool {
+func isDown(keyEv *draw.KeyEvent) bool {
 	if keyEv == nil {
 		return false
 	}
-	return tcell.KeyDown == keyEv.Key() || (tcell.KeyRune == keyEv.Key() && keyEv.Rune() == 's')
+	return draw.KeyDown == keyEv.Key || (draw.KeyRune == keyEv.Key && keyEv.Rune == 's')
 }
 
 // isLeft checks whether a key event represents a valid "left" key press.
-func isLeft(keyEv *tcell.EventKey) bool {
+func isLeft(keyEv *draw.KeyEvent) bool {
 	if keyEv == nil {
 		return false
 	}
-	return tcell.KeyLeft == keyEv.Key() || (tcell.KeyRune == keyEv.Key() && keyEv.Rune() == 'a')
+	return draw.KeyLeft == keyEv.Key || (draw.KeyRune == keyEv.Key && keyEv.Rune == 'a')
 }
 
 // isRight checks whether a key event represents a valid "right" key press.
-func isRight(keyEv *tcell.EventKey) bool {
+func isRight(keyEv *draw.KeyEvent) bool {
 	if keyEv == nil {
 		return false
 	}
-	return tcell.KeyRight == keyEv.Key() || (tcell.KeyRune == keyEv.Key() && keyEv.Rune() == 'd')
+	return draw.KeyRight == keyEv.Key || (draw.KeyRune == keyEv.Key && keyEv.Rune == 'd')
 }
 
 const ChordMS = 50
 
 // maybeChord is used to work around the limitation of the terminal only receiving a single keypress at a time.
 // It returns the next key pressed within `ChordMS`, or nil.
-func maybeChord(r draw.Screen) *tcell.EventKey {
-	ev := make(chan tcell.Event)
+func maybeChord(r draw.Screen) *draw.KeyEvent {
+	ev := make(chan draw.ScreenEvent)
 	timer := time.NewTimer(ChordMS * time.Millisecond)
 
 	go func() {
@@ -153,8 +150,8 @@ func maybeChord(r draw.Screen) *tcell.EventKey {
 		select {
 		case event := <-ev:
 			switch keyEv := event.(type) {
-			case *tcell.EventKey:
-				if keyEv.Key() == tcell.KeyF64 {
+			case *draw.KeyEvent:
+				if keyEv.Key == draw.KeyDummy {
 					return nil
 				}
 				return keyEv
@@ -163,7 +160,7 @@ func maybeChord(r draw.Screen) *tcell.EventKey {
 			}
 		case <-timer.C:
 			// send dummy key event
-			r.PostEvent(tcell.NewEventKey(tcell.KeyF64, ' ', tcell.ModNone))
+			r.PostEvent(&draw.KeyEvent{})
 		}
 	}
 }

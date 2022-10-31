@@ -1,7 +1,6 @@
 package systems
 
 import (
-	"github.com/gdamore/tcell/v2"
 	"github.com/vgalaktionov/roguelike-go/draw"
 	"github.com/vgalaktionov/roguelike-go/ecs"
 
@@ -17,7 +16,7 @@ func clearMap(r draw.Screen) {
 	maxX, maxY := r.Size()
 	for x := UIOffsetX; x <= maxX; x++ {
 		for y := UIOffsetY; y <= maxY; y++ {
-			r.SetContent(x, y, ' ', nil, tcell.StyleDefault)
+			r.SetCellContent(x, y, ' ', draw.ColorFromPalette(draw.Black, draw.Black))
 		}
 	}
 }
@@ -43,9 +42,9 @@ func RenderMap(w *ecs.World) {
 					if m.RevealedTiles[x][y] {
 						switch tile {
 						case FloorTile:
-							r.SetContent(renderX, renderY, ' ', nil, tcell.StyleDefault.Background(tcell.NewRGBColor(20, 20, 20)))
+							r.SetCellContent(renderX, renderY, ' ', draw.ColorFromPalette(draw.DarkGray, draw.Black))
 						case WallTile:
-							r.SetContent(renderX, renderY, '█', nil, tcell.StyleDefault.Foreground(tcell.NewRGBColor(50, 50, 50).TrueColor()))
+							r.SetCellContent(renderX, renderY, '█', draw.ColorFromPalette(draw.LightGray, draw.Black))
 						}
 					}
 					// If tile is neither visible nor revealed, skip rendering
@@ -57,9 +56,9 @@ func RenderMap(w *ecs.World) {
 
 				switch tile {
 				case FloorTile:
-					r.SetContent(renderX, renderY, ' ', nil, tcell.StyleDefault.Foreground(tcell.ColorLightGray.TrueColor()).Bold(true))
+					r.SetCellContent(renderX, renderY, ' ', draw.ColorFromPalette(draw.DarkGray, draw.Black))
 				case WallTile:
-					r.SetContent(renderX, renderY, '█', nil, tcell.StyleDefault.Foreground(tcell.ColorDarkGreen.TrueColor()).Bold(true))
+					r.SetCellContent(renderX, renderY, '█', draw.ColorFromPalette(draw.BlueGreen, draw.Black))
 				}
 			}
 		}

@@ -6,7 +6,7 @@ import (
 )
 
 type Renderer struct {
-	*draw.ConsoleRenderer
+	draw.Screen
 }
 
 const RendererTag = ecs.RTag("Renderer")
