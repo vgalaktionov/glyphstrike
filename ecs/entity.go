@@ -12,11 +12,7 @@ func AddEntity(w *World, components ...Component) Entity {
 	w.lastEntityID++
 	w.entities[w.lastEntityID] = struct{}{}
 	for _, c := range components {
-		c := c
-		if w.components[c.CTag()] == nil {
-			w.components[c.CTag()] = make(map[Entity]Component)
-		}
-		w.components[c.CTag()][w.lastEntityID] = c
+		SetEntityComponent(w, c, w.lastEntityID)
 	}
 	return w.lastEntityID
 }

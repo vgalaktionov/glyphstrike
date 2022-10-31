@@ -37,12 +37,20 @@ func NewGame() *Game {
 	ecs.RegisterEventSystem(w, systems.Console, events.ConsoleEvent{})
 
 	ecs.RegisterSystem(w, systems.UpdateVisibility)
+
+	// only one of these two will run
 	ecs.RegisterSystem(w, systems.HandlePlayerInput)
 	ecs.RegisterSystem(w, systems.ProcessMonsterAI)
+
 	ecs.RegisterSystem(w, systems.MapIndexing)
+	ecs.RegisterSystem(w, systems.MeleeCombat)
+	ecs.RegisterSystem(w, systems.ApplyDamage)
+	ecs.RegisterSystem(w, systems.Reap)
+
 	ecs.RegisterSystem(w, systems.RenderMap)
 	ecs.RegisterSystem(w, systems.Render)
 	ecs.RegisterSystem(w, systems.UI)
+
 	ecs.RegisterSystem(w, systems.UpdateTurn)
 
 	screenX, screenY := screen.Size()

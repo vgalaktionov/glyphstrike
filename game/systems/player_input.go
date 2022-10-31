@@ -86,7 +86,7 @@ func HandlePlayerInput(w *ecs.World) {
 
 // tryMovePlayer handles player movement and attack input (via bump to fight)
 func tryMovePlayer(w *ecs.World, playerEnt ecs.Entity, deltaX, deltaY int) {
-	playerPos := ecs.GetEntityComponent[Position](w, playerEnt)
+	playerPos := ecs.MustGetEntityComponent[Position](w, playerEnt)
 	destX := playerPos.X + deltaX
 	destY := playerPos.Y + deltaY
 
@@ -94,7 +94,7 @@ func tryMovePlayer(w *ecs.World, playerEnt ecs.Entity, deltaX, deltaY int) {
 
 	for _, potentialTarget := range m.TileContents[destX][destY] {
 		if ecs.HasEntityComponent[CombatStats](w, ecs.Entity(potentialTarget)) {
-			log.Print("From Hell's Heart, I stab thee!")
+			ecs.SetEntityComponent(w, WantsToMelee{Target: potentialTarget}, playerEnt)
 			return
 		}
 	}

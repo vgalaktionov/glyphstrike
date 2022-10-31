@@ -30,7 +30,7 @@ func RenderMap(w *ecs.World) {
 	clearMap(r)
 
 	for e := range ecs.QueryEntitiesIter(w, Player{}, Viewshed{}) {
-		viewshed := ecs.GetEntityComponent[Viewshed](w, e)
+		viewshed := ecs.MustGetEntityComponent[Viewshed](w, e)
 
 		for x, col := range m.Tiles {
 			renderX := x + UIOffsetX

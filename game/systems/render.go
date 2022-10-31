@@ -17,16 +17,16 @@ func Render(w *ecs.World) {
 	if err != nil {
 		log.Fatalln("no player found")
 	}
-	playerViewshed := ecs.GetEntityComponent[Viewshed](w, playerEnt)
+	playerViewshed := ecs.MustGetEntityComponent[Viewshed](w, playerEnt)
 
 	for e := range ecs.QueryEntitiesIter(w, Renderable{}, Position{}) {
-		pos := ecs.GetEntityComponent[Position](w, e)
+		pos := ecs.MustGetEntityComponent[Position](w, e)
 
 		if !playerViewshed.View.IsVisible(pos.X, pos.Y) {
 			continue
 		}
 
-		renderable := ecs.GetEntityComponent[Renderable](w, e)
+		renderable := ecs.MustGetEntityComponent[Renderable](w, e)
 		r.SetContent(pos.X+UIOffsetX, pos.Y+UIOffsetY, renderable.Glyph, nil, renderable.Style)
 	}
 }

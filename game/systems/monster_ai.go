@@ -21,13 +21,13 @@ func ProcessMonsterAI(w *ecs.World) {
 	if err != nil {
 		log.Fatalln("no player found")
 	}
-	playerPos := ecs.GetEntityComponent[Position](w, player)
+	playerPos := ecs.MustGetEntityComponent[Position](w, player)
 	m := ecs.GetResource[*resources.Map](w)
 
 	for e := range ecs.QueryEntitiesIter(w, Position{}, Viewshed{}, MonsterAI{}, Name("")) {
-		vs := ecs.GetEntityComponent[Viewshed](w, e)
-		name := ecs.GetEntityComponent[Name](w, e)
-		pos := ecs.GetEntityComponent[Position](w, e)
+		vs := ecs.MustGetEntityComponent[Viewshed](w, e)
+		name := ecs.MustGetEntityComponent[Name](w, e)
+		pos := ecs.MustGetEntityComponent[Position](w, e)
 
 		dist := util.Distance(pos.X, pos.Y, playerPos.X, playerPos.Y)
 		if dist < 1.5 {

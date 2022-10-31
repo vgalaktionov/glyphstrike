@@ -13,7 +13,7 @@ func MapIndexing(w *ecs.World) {
 	m.ClearContents()
 
 	for e := range ecs.QueryEntitiesIter(w, Position{}, BlocksTile{}) {
-		pos := ecs.GetEntityComponent[Position](w, e)
+		pos := ecs.MustGetEntityComponent[Position](w, e)
 
 		if ecs.HasEntityComponent[BlocksTile](w, e) {
 			m.BlockedTiles[pos.X][pos.Y] = true
