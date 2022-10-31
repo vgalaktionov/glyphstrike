@@ -1,0 +1,7 @@
+{
+  "go.buildTags": "js",
+  "go.toolsEnvVars": {
+    "GOOS": "js",
+    "GOARCH": "wasm"
+  }
+}
