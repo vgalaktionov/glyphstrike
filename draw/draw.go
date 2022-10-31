@@ -10,6 +10,7 @@ import (
 type Screen interface {
 	Sync()
 	PollEvent() tcell.Event
+	PostEvent(ev tcell.Event) error
 	Clear()
 	Show()
 	Size() (height int, width int)
