@@ -23,7 +23,6 @@ func ProcessMonsterAI(w *ecs.World) {
 	}
 	playerPos := ecs.GetEntityComponent[Position](w, player)
 	m := ecs.GetResource[resources.Map](w)
-	g := m.GetGrid()
 
 	for e := range ecs.QueryEntitiesIter(w, Position{}, Viewshed{}, MonsterAI{}, Name("")) {
 		vs := ecs.GetEntityComponent[Viewshed](w, e)
@@ -38,6 +37,7 @@ func ProcessMonsterAI(w *ecs.World) {
 		}
 
 		if vs.View.IsVisible(playerPos.X, playerPos.Y) {
+			g := m.GetGridFor(pos.X, pos.Y)
 			path := g.GetPath(float64(pos.X), float64(pos.Y), float64(playerPos.X), float64(playerPos.Y), true, true)
 			if path == nil || path.Length() < 2 {
 				continue

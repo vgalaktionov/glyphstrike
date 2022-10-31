@@ -37,9 +37,9 @@ func NewGame() *Game {
 	ecs.RegisterEventSystem(w, systems.Console, events.ConsoleEvent{})
 
 	ecs.RegisterSystem(w, systems.UpdateVisibility)
-	ecs.RegisterSystem(w, systems.MapIndexing)
 	ecs.RegisterSystem(w, systems.HandlePlayerInput)
 	ecs.RegisterSystem(w, systems.ProcessMonsterAI)
+	ecs.RegisterSystem(w, systems.MapIndexing)
 	ecs.RegisterSystem(w, systems.RenderMap)
 	ecs.RegisterSystem(w, systems.Render)
 	ecs.RegisterSystem(w, systems.UI)

@@ -176,12 +176,15 @@ func (m *Map) ApplyVerticalTunnel(y1, y2, x int) {
 	}
 }
 
-func (m *Map) GetGrid() *paths.Grid {
+// GetGridFor returns a grid to be used in pathfinding, with the starting point set to be walkable.
+func (m *Map) GetGridFor(x, y int) *paths.Grid {
 	g := paths.NewGrid(m.Width, m.Height, 1, 1)
 
 	for _, c := range g.AllCells() {
-		c.Walkable = !m.IsOpaque(c.X, c.Y)
+		c.Walkable = !m.BlockedTiles[c.X][c.Y]
 	}
+	start := g.Get(x, y)
+	start.Walkable = true
 
 	return g
 }
