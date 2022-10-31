@@ -20,11 +20,13 @@ const (
 	White ColorName = iota
 	LightGray
 	DarkGray
+	DarkerGray
 	BlueGreen
 	Black
 	Red
 	Green
 	Yellow
+	Transparent
 )
 
 // ColorFromPalette resolves color shortcuts by name
@@ -35,9 +37,13 @@ func ColorFromPalette(name1, name2 ColorName) Color {
 		case White:
 			colors[i].R, colors[i].G, colors[i].B = tcell.NewHexColor(0xECEFF4).RGB()
 		case LightGray:
-			colors[i].R, colors[i].G, colors[i].B = tcell.NewHexColor(0xE5E9F0).RGB()
-		case DarkGray:
 			colors[i].R, colors[i].G, colors[i].B = tcell.NewHexColor(0xD8DEE9).RGB()
+		case DarkGray:
+			colors[i].R, colors[i].G, colors[i].B = tcell.NewHexColor(0x4C566A).RGB()
+		case DarkerGray:
+			colors[i].R, colors[i].G, colors[i].B = tcell.NewHexColor(0x3B4252).RGB()
+		case Black:
+			colors[i].R, colors[i].G, colors[i].B = tcell.NewHexColor(0x2E3440).RGB()
 		case BlueGreen:
 			colors[i].R, colors[i].G, colors[i].B = tcell.NewHexColor(0x8FBCBB).RGB()
 		case Red:
@@ -45,7 +51,8 @@ func ColorFromPalette(name1, name2 ColorName) Color {
 		case Yellow:
 			colors[i].R, colors[i].G, colors[i].B = tcell.NewHexColor(0xEBCB8B).RGB()
 
-		case Black:
+		// Tcell does not support rgba, but we skip rendering if it's black
+		case Transparent:
 			colors[i].R, colors[i].G, colors[i].B = 0, 0, 0
 		}
 	}

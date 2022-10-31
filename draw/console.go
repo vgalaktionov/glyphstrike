@@ -104,15 +104,17 @@ func (cr *ConsoleRenderer) PostEvent(ev ScreenEvent) error {
 }
 
 func (cr ConsoleRenderer) SetCellContent(x int, y int, primary rune, color Color) {
-	cr.Screen.SetContent(
-		x,
-		y,
-		primary,
-		nil,
+	var style tcell.Style
+	if color.Background.R == 0 && color.Background.G == 0 && color.Background.B == 0 {
+		style = tcell.StyleDefault.Foreground(
+			tcell.NewRGBColor(color.Foreground.R, color.Foreground.G, color.Foreground.B).TrueColor(),
+		)
+	} else {
 		tcell.StyleDefault.Foreground(
 			tcell.NewRGBColor(color.Foreground.R, color.Foreground.G, color.Foreground.B).TrueColor(),
 		).Background(
 			tcell.NewRGBColor(color.Background.R, color.Background.G, color.Background.B).TrueColor(),
-		),
-	)
+		)
+	}
+	cr.Screen.SetContent(x, y, primary, nil, style)
 }

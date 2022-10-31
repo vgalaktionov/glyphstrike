@@ -59,7 +59,7 @@ func NewGame() *Game {
 	m := resources.NewMapRoomsAndCorridors(mapX, mapY)
 
 	ecs.SetResource(w, m)
-	ecs.SetResource(w, resources.Renderer{screen})
+	ecs.SetResource(w, resources.Renderer{Screen: screen})
 	ecs.SetResource(w, resources.PreRun)
 
 	playerX, playerY := m.Rooms[0].Center()
@@ -69,7 +69,7 @@ func NewGame() *Game {
 		components.Position{X: playerX, Y: playerY},
 		components.Renderable{
 			Glyph: '@',
-			Style: draw.ColorFromPalette(draw.Yellow, draw.Black),
+			Style: draw.ColorFromPalette(draw.Yellow, draw.Transparent),
 		},
 		components.Viewshed{Radius: 8, View: fov.New()},
 		components.Name("Player"),
@@ -96,7 +96,7 @@ func NewGame() *Game {
 		ecs.AddEntity(
 			w,
 			components.Position{X: x, Y: y},
-			components.Renderable{Glyph: glyph, Style: draw.ColorFromPalette(draw.Yellow, draw.Black)},
+			components.Renderable{Glyph: glyph, Style: draw.ColorFromPalette(draw.Red, draw.Transparent)},
 			components.Viewshed{Radius: 8, View: fov.New()},
 			components.MonsterAI{},
 			components.Name(fmt.Sprintf("Monster #%d", i)),

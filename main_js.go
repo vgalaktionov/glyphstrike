@@ -6,22 +6,26 @@ package main
 import (
 	"log"
 	"syscall/js"
+
+	"github.com/vgalaktionov/roguelike-go/game"
 )
 
 func main() {
-	window := js.Global()
-	doc := window.Get("document")
-	body := doc.Get("body")
-	div := doc.Call("createElement", "div")
-	div.Set("textContent", "hello!!")
-	body.Call("appendChild", div)
-	body.Set("onclick",
-		js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-			div := doc.Call("createElement", "div")
-			div.Set("textContent", "click!!")
-			body.Call("appendChild", div)
-			return nil
-		}))
-	log.Println("Hello World!")
+	g := game.NewGame()
+
+	// Hook up stdlib logging output to the game window console
+	log.SetFlags(0)
+	log.SetOutput(g.Logger())
+
+	quit := func() {
+		maybePanic := recover()
+		g.CleanUp()
+		if maybePanic != nil {
+			js.Global().Get("console").Call("log", maybePanic)
+		}
+	}
+	defer quit()
+
+	g.Run()
 	<-make(chan struct{})
 }

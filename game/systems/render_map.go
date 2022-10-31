@@ -44,7 +44,7 @@ func RenderMap(w *ecs.World) {
 						case FloorTile:
 							r.SetCellContent(renderX, renderY, ' ', draw.ColorFromPalette(draw.DarkGray, draw.Black))
 						case WallTile:
-							r.SetCellContent(renderX, renderY, '█', draw.ColorFromPalette(draw.LightGray, draw.Black))
+							r.SetCellContent(renderX, renderY, '█', draw.ColorFromPalette(draw.DarkerGray, draw.Black))
 						}
 					}
 					// If tile is neither visible nor revealed, skip rendering
@@ -56,7 +56,7 @@ func RenderMap(w *ecs.World) {
 
 				switch tile {
 				case FloorTile:
-					r.SetCellContent(renderX, renderY, ' ', draw.ColorFromPalette(draw.DarkGray, draw.Black))
+					r.SetCellContent(renderX, renderY, '█', draw.ColorFromPalette(draw.LightGray, draw.Black))
 				case WallTile:
 					r.SetCellContent(renderX, renderY, '█', draw.ColorFromPalette(draw.BlueGreen, draw.Black))
 				}

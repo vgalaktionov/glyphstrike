@@ -69,14 +69,7 @@ func HandlePlayerInput(w *ecs.World) {
 		tryMovePlayer(w, playerEnt, deltaX, deltaY)
 
 	case *draw.MouseEvent:
-		// mouseX, mouseY := ev.Position()
-
-		// 		switch ev.Buttons() {
-		// 		case tcell.Button1, tcell.Button2:
-		// 		case tcell.ButtonNone:
-		// 		}
-		// 	}
-		// }
+		return
 	}
 
 }
