@@ -44,7 +44,7 @@ func NewSimulatedGameRoomsAndCorridors() *game.Game {
 
 	renderer := tcell.NewSimulationScreen("UTF-8")
 	renderer.Init()
-	renderer.SetSize(200, 200)
+	renderer.SetSize(300, 300)
 	renderer.SetStyle(draw.DEFAULT_STYLE)
 	renderer.Clear()
 	screen := &draw.ConsoleRenderer{Screen: renderer}
@@ -87,8 +87,9 @@ func NewSimulatedGameRoomsAndCorridors() *game.Game {
 		components.Player{},
 		components.Position{X: playerX, Y: playerY},
 		components.Renderable{
-			Glyph: '@',
-			Style: draw.ColorFromPalette(draw.Yellow, draw.Black),
+			Glyph:      '@',
+			Foreground: draw.Yellow,
+			Background: draw.Black,
 		},
 		components.Viewshed{Radius: 8, View: fov.New()},
 		components.Name("Player"),
@@ -115,7 +116,7 @@ func NewSimulatedGameRoomsAndCorridors() *game.Game {
 		ecs.AddEntity(
 			w,
 			components.Position{X: x, Y: y},
-			components.Renderable{Glyph: glyph, Style: draw.ColorFromPalette(draw.Red, draw.Black)},
+			components.Renderable{Glyph: glyph, Foreground: draw.Red, Background: draw.Black},
 			components.Viewshed{Radius: 8, View: fov.New()},
 			components.MonsterAI{},
 			components.Name(fmt.Sprintf("Monster #%d", i)),
@@ -134,6 +135,6 @@ func NewSimulatedGameRoomsAndCorridors() *game.Game {
 func BenchmarkRandomGameWithRoomsAndCorridors(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		game := NewSimulatedGameRoomsAndCorridors()
-		game.RunN(100)
+		game.RunN(500)
 	}
 }

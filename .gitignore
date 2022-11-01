@@ -2,3 +2,4 @@
 **/*.log
 # profiling output
 *.out
+*.test

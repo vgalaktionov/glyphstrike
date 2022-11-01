@@ -15,5 +15,5 @@ func UI(w *ecs.World) {
 	r := ecs.GetResource[resources.Renderer](w)
 	_, maxY := r.Size()
 	// draw console
-	draw.DrawBox(r, 0, UIOffsetY, UIOffsetX, maxY-1, draw.ColorFromPalette(draw.White, draw.Black), "")
+	draw.DrawBox(r, 0, UIOffsetY, UIOffsetX, maxY-1, draw.White, draw.Black, "")
 }

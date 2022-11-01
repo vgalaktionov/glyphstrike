@@ -26,7 +26,7 @@ func Console(w *ecs.World) {
 		clearConsole(r)
 
 		for y, line := range lines[util.MaxInt(len(lines)-maxY, 0):] {
-			draw.DrawStr(r, 1, y+UIOffsetY+1, draw.ColorFromPalette(draw.White, draw.Black), line[:util.MinInt(UIOffsetX-1, len(line))])
+			draw.DrawStr(r, 1, y+UIOffsetY+1, draw.White, draw.Black, line[:util.MinInt(UIOffsetX-1, len(line))])
 		}
 	}
 }
@@ -36,7 +36,7 @@ func clearConsole(r draw.Screen) {
 	_, maxY := r.Size()
 	for x := 0; x <= UIOffsetX; x++ {
 		for y := 0; y <= maxY-1; y++ {
-			r.SetCellContent(x, y, ' ', draw.ColorFromPalette(draw.Black, draw.Black))
+			r.SetCellContent(x, y, ' ', draw.Black, draw.Black)
 		}
 	}
 }

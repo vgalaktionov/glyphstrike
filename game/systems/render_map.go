@@ -16,7 +16,7 @@ func clearMap(r draw.Screen) {
 	maxX, maxY := r.Size()
 	for x := UIOffsetX; x < maxX; x++ {
 		for y := UIOffsetY; y < maxY; y++ {
-			r.SetCellContent(x, y, ' ', draw.ColorFromPalette(draw.Black, draw.Black))
+			r.SetCellContent(x, y, ' ', draw.Black, draw.Black)
 		}
 	}
 }
@@ -42,9 +42,9 @@ func RenderMap(w *ecs.World) {
 					if m.RevealedTiles[x][y] {
 						switch tile {
 						case FloorTile:
-							r.SetCellContent(renderX, renderY, ' ', draw.ColorFromPalette(draw.DarkGray, draw.Black))
+							r.SetCellContent(renderX, renderY, ' ', draw.DarkGray, draw.DarkGray)
 						case WallTile:
-							r.SetCellContent(renderX, renderY, '█', draw.ColorFromPalette(draw.DarkerGray, draw.Black))
+							r.SetCellContent(renderX, renderY, '█', draw.DarkerGray, draw.Black)
 						}
 					}
 					// If tile is neither visible nor revealed, skip rendering
@@ -56,9 +56,9 @@ func RenderMap(w *ecs.World) {
 
 				switch tile {
 				case FloorTile:
-					r.SetCellContent(renderX, renderY, '█', draw.ColorFromPalette(draw.Black, draw.Black))
+					r.SetCellContent(renderX, renderY, '█', draw.Black, draw.Black)
 				case WallTile:
-					r.SetCellContent(renderX, renderY, '█', draw.ColorFromPalette(draw.BlueGreen, draw.Black))
+					r.SetCellContent(renderX, renderY, '█', draw.BlueGreen, draw.Black)
 				}
 			}
 		}

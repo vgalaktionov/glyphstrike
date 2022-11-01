@@ -7,8 +7,9 @@ import (
 
 // Renderable is an entity that we know how to draw to the screen.
 type Renderable struct {
-	Glyph rune
-	Style draw.Color
+	Glyph      rune
+	Foreground draw.ColorName
+	Background draw.ColorName
 }
 
 func (Renderable) CTag() ecs.CTag {

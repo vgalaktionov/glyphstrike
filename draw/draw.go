@@ -13,20 +13,20 @@ type Screen interface {
 	Clear()
 	Show()
 	Size() (height int, width int)
-	SetCellContent(x, y int, primary rune, color Color)
+	SetCellContent(x, y int, primary rune, foreground, background ColorName)
 	CleanUp()
 }
 
 // DrawStr draws a single line of text to the screen. This will not work correctly for combining characters.
-func DrawStr(r Screen, x, y int, color Color, str string) {
+func DrawStr(r Screen, x, y int, foreground, background ColorName, str string) {
 	for _, c := range str {
-		r.SetCellContent(x, y, c, color)
+		r.SetCellContent(x, y, c, foreground, background)
 		x += 1
 	}
 }
 
 // DrawBox draws a rectangular box with the standard box drawing characters, and (optional) text contents.
-func DrawBox(r Screen, x1, y1, x2, y2 int, color Color, text string) {
+func DrawBox(r Screen, x1, y1, x2, y2 int, foreground, background ColorName, text string) {
 	if y2 < y1 {
 		y1, y2 = y2, y1
 	}
@@ -36,23 +36,21 @@ func DrawBox(r Screen, x1, y1, x2, y2 int, color Color, text string) {
 
 	// Draw borders
 	for col := x1; col <= x2; col++ {
-		r.SetCellContent(col, y1, tcell.RuneHLine, color)
-		r.SetCellContent(col, y2, tcell.RuneHLine, color)
+		r.SetCellContent(col, y1, tcell.RuneHLine, foreground, background)
+		r.SetCellContent(col, y2, tcell.RuneHLine, foreground, background)
 	}
 	for row := y1 + 1; row < y2; row++ {
-		r.SetCellContent(x1, row, tcell.RuneVLine, color)
-		r.SetCellContent(x2, row, tcell.RuneVLine, color)
+		r.SetCellContent(x1, row, tcell.RuneVLine, foreground, background)
+		r.SetCellContent(x2, row, tcell.RuneVLine, foreground, background)
 	}
 
 	// Only draw corners if necessary
 	if y1 != y2 && x1 != x2 {
-		r.SetCellContent(x1, y1, tcell.RuneULCorner, color)
-		r.SetCellContent(x2, y1, tcell.RuneURCorner, color)
-		r.SetCellContent(x1, y2, tcell.RuneLLCorner, color)
-		r.SetCellContent(x2, y2, tcell.RuneLRCorner, color)
+		r.SetCellContent(x1, y1, tcell.RuneULCorner, foreground, background)
+		r.SetCellContent(x2, y1, tcell.RuneURCorner, foreground, background)
+		r.SetCellContent(x1, y2, tcell.RuneLLCorner, foreground, background)
+		r.SetCellContent(x2, y2, tcell.RuneLRCorner, foreground, background)
 	}
 
-	DrawStr(r, x1+1, y1+1, color, text)
+	DrawStr(r, x1+1, y1+1, foreground, background, text)
 }
-
-var DEFAULT_STYLE tcell.Style = tcell.StyleDefault.Background(tcell.ColorBlack.TrueColor()).Foreground(tcell.ColorWhite.TrueColor())

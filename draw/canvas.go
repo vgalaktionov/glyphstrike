@@ -109,3 +109,16 @@ func (cr *CanvasRenderer) Sync() {
 	size := js.Global().Call("size")
 	cr.Width, cr.Height = size.Get("width").Int(), size.Get("height").Int()
 }
+
+var palette [len(Colors)]string
+
+func init() {
+	for i, color := range Colors {
+		palette[i] = fmt.Sprint("#", color)
+	}
+}
+
+// ColorFromPalette resolves color shortcuts by name
+func ColorFromPalette(foreground, background ColorName) string {
+	return Color{palette[foreground], palette[background]}
+}

@@ -68,8 +68,9 @@ func NewGame() *Game {
 		components.Player{},
 		components.Position{X: playerX, Y: playerY},
 		components.Renderable{
-			Glyph: '@',
-			Style: draw.ColorFromPalette(draw.Yellow, draw.Black),
+			Glyph:      '@',
+			Foreground: draw.Yellow,
+			Background: draw.Black,
 		},
 		components.Viewshed{Radius: 8, View: fov.New()},
 		components.Name("Player"),
@@ -96,7 +97,7 @@ func NewGame() *Game {
 		ecs.AddEntity(
 			w,
 			components.Position{X: x, Y: y},
-			components.Renderable{Glyph: glyph, Style: draw.ColorFromPalette(draw.Red, draw.Black)},
+			components.Renderable{Glyph: glyph, Foreground: draw.Red, Background: draw.Black},
 			components.Viewshed{Radius: 8, View: fov.New()},
 			components.MonsterAI{},
 			components.Name(fmt.Sprintf("Monster #%d", i)),

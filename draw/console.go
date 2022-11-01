@@ -103,12 +103,19 @@ func (cr *ConsoleRenderer) PostEvent(ev ScreenEvent) error {
 	return fmt.Errorf("invalid event: %s", ev)
 }
 
-func (cr ConsoleRenderer) SetCellContent(x int, y int, primary rune, color Color) {
-	style := tcell.StyleDefault.Foreground(
-		tcell.NewRGBColor(color.Foreground.R, color.Foreground.G, color.Foreground.B).TrueColor(),
-	).Background(
-		tcell.NewRGBColor(color.Background.R, color.Background.G, color.Background.B).TrueColor(),
-	)
-
-	cr.Screen.SetContent(x, y, primary, nil, style)
+func (cr ConsoleRenderer) SetCellContent(x int, y int, primary rune, foreground, background ColorName) {
+	cr.Screen.SetContent(x, y, primary, nil, palette[foreground][background])
 }
+
+// palette is a package-private lookup of rendering styles, precomputed on init
+var palette [len(Colors)][len(Colors)]tcell.Style
+
+func init() {
+	for i, fg := range Colors {
+		for j, bg := range Colors {
+			palette[i][j] = DEFAULT_STYLE.Foreground(tcell.NewHexColor(int32(fg)).TrueColor()).Background(tcell.NewHexColor(int32(bg)).TrueColor())
+		}
+	}
+}
+
+var DEFAULT_STYLE tcell.Style = tcell.StyleDefault.Background(tcell.ColorBlack.TrueColor()).Foreground(tcell.ColorWhite.TrueColor())
