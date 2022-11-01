@@ -1,41 +1,60 @@
-package game
+package game_test
 
 import (
 	"fmt"
-	"io"
 	"math/rand"
+	"testing"
 	"time"
 
+	"github.com/gdamore/tcell/v2"
 	"github.com/gdamore/tcell/v2/encoding"
 	"github.com/norendren/go-fov/fov"
 	"github.com/vgalaktionov/roguelike-go/draw"
 	"github.com/vgalaktionov/roguelike-go/ecs"
+	"github.com/vgalaktionov/roguelike-go/game"
 	"github.com/vgalaktionov/roguelike-go/game/components"
 	"github.com/vgalaktionov/roguelike-go/game/events"
 	"github.com/vgalaktionov/roguelike-go/game/resources"
 	"github.com/vgalaktionov/roguelike-go/game/systems"
 )
 
-// Game binds together all the high-level subsystems for the game to use.
-// Currently, this only means the ECS and the renderer.
-type Game struct {
-	ECS      *ecs.World
-	Renderer draw.Screen
+// RandomPlayer is a system used for testing.
+// By registering this, it is possible to simulate a game without player input
+func RandomPlayer(w *ecs.World) {
+	r := ecs.GetResource[resources.Renderer](w)
+	state := ecs.GetResource[resources.GameState](w)
+	if state != resources.PlayerTurn {
+		return
+	}
+	switch rand.Intn(4) {
+	case 0:
+		r.PostEvent(&draw.KeyEvent{Key: draw.KeyLeft, Rune: ' '})
+	case 1:
+		r.PostEvent(&draw.KeyEvent{Key: draw.KeyRight, Rune: ' '})
+	case 2:
+		r.PostEvent(&draw.KeyEvent{Key: draw.KeyUp, Rune: ' '})
+	case 3:
+		r.PostEvent(&draw.KeyEvent{Key: draw.KeyDown, Rune: ' '})
+	}
 }
 
-// NewGame abstracts away the technical details of setting up a terminal to render to.
-// It also sets up default systems and events.
-func NewGame() *Game {
+func NewSimulatedGameRoomsAndCorridors() *game.Game {
 	rand.Seed(time.Now().UnixNano())
 	encoding.Register()
 
-	screen := draw.NewScreen()
+	renderer := tcell.NewSimulationScreen("UTF-8")
+	renderer.Init()
+	renderer.SetSize(200, 200)
+	renderer.SetStyle(draw.DEFAULT_STYLE)
+	renderer.Clear()
+	screen := &draw.ConsoleRenderer{Screen: renderer}
 
 	w := ecs.NewWorld()
 
 	ecs.RegisterEventSystem(w, systems.Console, events.ConsoleEvent{})
 
 	ecs.RegisterSystem(w, systems.UpdateVisibility)
+	ecs.RegisterSystem(w, RandomPlayer)
 
 	// only one of these two will run
 	ecs.RegisterSystem(w, systems.HandlePlayerInput)
@@ -109,46 +128,12 @@ func NewGame() *Game {
 			},
 		)
 	}
-	return &Game{w, screen}
+	return &game.Game{w, screen}
 }
 
-// GameLogger retains a private reference to the Game
-type GameLogger struct {
-	game *Game
-}
-
-// Write implements the io.Writer interface for the console logging system
-func (gl *GameLogger) Write(msg []byte) (int, error) {
-	ecs.DispatchEvent(gl.game.ECS, events.ConsoleEvent{Message: string(msg)})
-	return len(msg), nil
-}
-
-// Logger returns a log sink hooked up to the console system.
-func (g *Game) Logger() io.Writer {
-	return &GameLogger{game: g}
-}
-
-// CleanUp performs any necessary cleanup actions on crash or exit.
-func (g *Game) CleanUp() {
-	g.Renderer.CleanUp()
-}
-
-// Run is the entrypoint into the Game. It kicks off background (event) systems and starts the game loop.
-func (g *Game) Run() {
-	ecs.RunEventSystems(g.ECS)
-
-	for {
-		ecs.RunSystems(g.ECS)
-		g.Renderer.Show()
-	}
-}
-
-// RunN will run the game loop for N number of turns; this is useful for testing and benchmarking.
-func (g *Game) RunN(n int) {
-	ecs.RunEventSystems(g.ECS)
-
-	for i := 0; i < n; i++ {
-		ecs.RunSystems(g.ECS)
-		g.Renderer.Show()
+func BenchmarkRandomGameWithRoomsAndCorridors(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		game := NewSimulatedGameRoomsAndCorridors()
+		game.RunN(100)
 	}
 }
