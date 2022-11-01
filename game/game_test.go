@@ -92,7 +92,7 @@ func NewSimulatedGameRoomsAndCorridors() *game.Game {
 		components.Renderable{
 			Glyph:      '@',
 			Foreground: draw.Yellow,
-			Background: draw.Black,
+			Background: draw.Gray,
 		},
 		components.Viewshed{Radius: 8, View: fov.New()},
 		components.Name("Player"),
@@ -119,7 +119,7 @@ func NewSimulatedGameRoomsAndCorridors() *game.Game {
 		ecs.AddEntity(
 			w,
 			components.Position{X: x, Y: y},
-			components.Renderable{Glyph: glyph, Foreground: draw.Red, Background: draw.Black},
+			components.Renderable{Glyph: glyph, Foreground: draw.Red, Background: draw.Gray},
 			components.Viewshed{Radius: 8, View: fov.New()},
 			components.MonsterAI{},
 			components.Name(fmt.Sprintf("Monster #%d", i)),

@@ -98,7 +98,13 @@ class CanvasRenderer {
       const bg =
         "#" + this.#decoder.decode(buf.slice(i + 4 + 6, i + LineLength));
       ctx.fillStyle = bg;
-      ctx.fillRect(xOffset, yOffset, cellWidth, cellHeight);
+      // draw slightly more to hide ugly gaps
+      ctx.fillRect(
+        xOffset,
+        yOffset - cellHeight + 3,
+        cellWidth,
+        cellHeight + 3
+      );
       ctx.fillStyle = fg;
       ctx.fillText(char, xOffset, yOffset);
 

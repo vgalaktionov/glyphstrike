@@ -17,6 +17,7 @@ type ColorName int
 const (
 	White ColorName = iota
 	LightGray
+	Gray
 	DarkGray
 	DarkerGray
 	Black
@@ -29,6 +30,7 @@ var Colors = [9]int{
 	0xECEFF4,
 	0xD8DEE9,
 	0x4C566A,
+	0x434C5E,
 	0x3B4252,
 	0x2E3440,
 	0xBF616A,

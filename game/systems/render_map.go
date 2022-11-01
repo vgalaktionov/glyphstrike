@@ -56,7 +56,7 @@ func RenderMap(w *ecs.World) {
 
 				switch tile {
 				case FloorTile:
-					r.SetCellContent(renderX, renderY, '█', draw.Black, draw.Black)
+					r.SetCellContent(renderX, renderY, ' ', draw.LightGray, draw.Gray)
 				case WallTile:
 					r.SetCellContent(renderX, renderY, '█', draw.BlueGreen, draw.Black)
 				}
