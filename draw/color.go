@@ -50,10 +50,6 @@ func ColorFromPalette(name1, name2 ColorName) Color {
 			colors[i].R, colors[i].G, colors[i].B = tcell.NewHexColor(0xBF616A).RGB()
 		case Yellow:
 			colors[i].R, colors[i].G, colors[i].B = tcell.NewHexColor(0xEBCB8B).RGB()
-
-		// Tcell does not support rgba, but we skip rendering if it's black
-		case Transparent:
-			colors[i].R, colors[i].G, colors[i].B = 0, 0, 0
 		}
 	}
 	return Color{colors[0], colors[1]}

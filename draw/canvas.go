@@ -13,10 +13,10 @@ import (
 type CanvasBuffer [][]map[string]interface{}
 
 func NewCanvasBuffer(width, height int) CanvasBuffer {
-	cb := make([][]map[string]interface{}, width+1)
-	for x := 0; x <= width; x++ {
-		cb[x] = make([]map[string]interface{}, height+1)
-		for y := 0; y <= height; y++ {
+	cb := make([][]map[string]interface{}, width)
+	for x := 0; x < width; x++ {
+		cb[x] = make([]map[string]interface{}, height)
+		for y := 0; y < height; y++ {
 			cb[x][y] = make(map[string]interface{})
 		}
 	}
@@ -85,13 +85,9 @@ func (cr *CanvasRenderer) PostEvent(ev ScreenEvent) error {
 
 func (cr *CanvasRenderer) SetCellContent(x int, y int, primary rune, style Color) {
 	cell := map[string]interface{}{
-		"text":        string(primary),
-		"foreground":  fmt.Sprintf("rgb(%d, %d, %d)", style.Foreground.R, style.Foreground.G, style.Foreground.B),
-		"background":  fmt.Sprintf("rgb(%d, %d, %d)", style.Background.R, style.Background.G, style.Background.B),
-		"transparent": style.Background.R == 0 && style.Background.B == 0 && style.Background.G == 0,
-	}
-	if style.Background.R == 0 && style.Background.B == 0 && style.Background.G == 0 {
-		cell["background"] = cr.Buffer[x][y]["background"]
+		"text":       string(primary),
+		"foreground": fmt.Sprintf("rgb(%d, %d, %d)", style.Foreground.R, style.Foreground.G, style.Foreground.B),
+		"background": fmt.Sprintf("rgb(%d, %d, %d)", style.Background.R, style.Background.G, style.Background.B),
 	}
 	cr.Buffer[x][y] = cell
 }

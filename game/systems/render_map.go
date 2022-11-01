@@ -14,8 +14,8 @@ import (
 // ClearMap only clears the map part of the screen, leaving UI elements intact.
 func clearMap(r draw.Screen) {
 	maxX, maxY := r.Size()
-	for x := UIOffsetX; x <= maxX; x++ {
-		for y := UIOffsetY; y <= maxY; y++ {
+	for x := UIOffsetX; x < maxX; x++ {
+		for y := UIOffsetY; y < maxY; y++ {
 			r.SetCellContent(x, y, ' ', draw.ColorFromPalette(draw.Black, draw.Black))
 		}
 	}
@@ -56,7 +56,7 @@ func RenderMap(w *ecs.World) {
 
 				switch tile {
 				case FloorTile:
-					r.SetCellContent(renderX, renderY, '█', draw.ColorFromPalette(draw.LightGray, draw.Black))
+					r.SetCellContent(renderX, renderY, '█', draw.ColorFromPalette(draw.Black, draw.Black))
 				case WallTile:
 					r.SetCellContent(renderX, renderY, '█', draw.ColorFromPalette(draw.BlueGreen, draw.Black))
 				}
