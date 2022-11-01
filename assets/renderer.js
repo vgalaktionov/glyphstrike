@@ -91,7 +91,7 @@ class CanvasRenderer {
     let xOffset = 0;
     let yOffset = 0;
     const { width: cellWidth, height: cellHeight } = this.cellSize();
-    const ctx = this.#canvas.getContext("2d");
+    const ctx = this.#canvas.getContext("2d", { colorSpace: "display-p3" });
     for (let i = 0; i < buf.length; i += LineLength) {
       const char = this.#decoder.decode(buf.slice(i, i + 4)).trimStart();
       const fg = "#" + this.#decoder.decode(buf.slice(i + 4, i + 4 + 6));
