@@ -1,3 +1,6 @@
+//go:build !js
+// +build !js
+
 package game_test
 
 import (

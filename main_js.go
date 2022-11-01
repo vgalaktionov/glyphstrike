@@ -21,7 +21,8 @@ func main() {
 		maybePanic := recover()
 		g.CleanUp()
 		if maybePanic != nil {
-			js.Global().Get("console").Call("log", maybePanic)
+			js.Global().Get("console").Call("error", maybePanic)
+			panic(maybePanic)
 		}
 	}
 	defer quit()

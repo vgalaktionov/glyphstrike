@@ -4,20 +4,26 @@
 package draw
 
 import (
-	"encoding/json"
+	"bytes"
 	"fmt"
 	"syscall/js"
 )
 
-// CanvasBuffer is the internal buffer of js objects to be drawn with the next CanvasRenderer.Show() call.
-type CanvasBuffer [][]map[string]interface{}
+// CanvasBufferCell is a single cell of the canvasbuffer
+type CanvasBufferCell struct {
+	Foreground, Background ColorName
+	Char                   rune
+}
+
+// CanvasBuffer is the internal buffer of cells to be drawn with the next CanvasRenderer.Show() call.
+type CanvasBuffer [][]CanvasBufferCell
 
 func NewCanvasBuffer(width, height int) CanvasBuffer {
-	cb := make([][]map[string]interface{}, width)
+	cb := make([][]CanvasBufferCell, width)
 	for x := 0; x < width; x++ {
-		cb[x] = make([]map[string]interface{}, height)
+		cb[x] = make([]CanvasBufferCell, height)
 		for y := 0; y < height; y++ {
-			cb[x][y] = make(map[string]interface{})
+			cb[x][y] = CanvasBufferCell{Black, Black, ' '}
 		}
 	}
 	return cb
@@ -25,17 +31,22 @@ func NewCanvasBuffer(width, height int) CanvasBuffer {
 
 // CanvasRenderer is used to render to HTML5 canvas in the browser when compiling to webassembly.
 type CanvasRenderer struct {
-	Buffer CanvasBuffer
-	Width  int
-	Height int
+	Renderer js.Value
+	Buffer   CanvasBuffer
+	Bytes    *bytes.Buffer
+	Width    int
+	Height   int
 }
 
+const LineLength = 4 + 6 + 6 // max 4 byte rune + 6 byte foreground hex + 6 byte background hex
+
 func NewScreen() Screen {
-	bg := ColorFromPalette(Black, Black).Foreground
-	js.Global().Call("initializeScreen", fmt.Sprintf("rgb(%d, %d, %d)", bg.R, bg.G, bg.B))
-	size := js.Global().Call("size")
+	renderer := js.Global().Get("CanvasRenderer").New(fmt.Sprint("#", palette[Black]))
+	js.Global().Set("renderer", renderer)
+	size := renderer.Call("size")
 	w, h := size.Get("width").Int(), size.Get("height").Int()
-	return &CanvasRenderer{Buffer: NewCanvasBuffer(w, h), Width: w, Height: h}
+	buf := new(bytes.Buffer)
+	return &CanvasRenderer{Renderer: renderer, Buffer: NewCanvasBuffer(w, h), Bytes: buf, Width: w, Height: h}
 }
 
 func (cr *CanvasRenderer) CleanUp() {
@@ -44,12 +55,12 @@ func (cr *CanvasRenderer) CleanUp() {
 
 func (cr *CanvasRenderer) Clear() {
 	cr.Buffer = NewCanvasBuffer(cr.Width, cr.Height)
-	js.Global().Call("clear")
+	cr.Renderer.Call("clear")
 }
 
 func (cr *CanvasRenderer) PollEvent() ScreenEvent {
 	wait := make(chan js.Value)
-	js.Global().Call("pollEvent").Call("then", js.FuncOf(func(this js.Value, args []js.Value) any {
+	cr.Renderer.Call("pollEvent").Call("then", js.FuncOf(func(this js.Value, args []js.Value) any {
 		wait <- args[0]
 		close(wait)
 		return nil
@@ -76,37 +87,45 @@ func (cr *CanvasRenderer) PollEvent() ScreenEvent {
 func (cr *CanvasRenderer) PostEvent(ev ScreenEvent) error {
 	switch event := ev.(type) {
 	case *KeyEvent:
-		js.Global().Call("postKeyEvent", event.Rune)
+		cr.Renderer.Call("postKeyEvent", event.Rune)
 	case *MouseEvent:
-		js.Global().Call("postMouseEvent", event.X, event.Y, event.Button)
+		cr.Renderer.Call("postMouseEvent", event.X, event.Y, event.Button)
 	}
 	return nil
 }
 
-func (cr *CanvasRenderer) SetCellContent(x int, y int, primary rune, style Color) {
-	cell := map[string]interface{}{
-		"text":       string(primary),
-		"foreground": fmt.Sprintf("rgb(%d, %d, %d)", style.Foreground.R, style.Foreground.G, style.Foreground.B),
-		"background": fmt.Sprintf("rgb(%d, %d, %d)", style.Background.R, style.Background.G, style.Background.B),
-	}
-	cr.Buffer[x][y] = cell
+func (cr *CanvasRenderer) SetCellContent(x int, y int, primary rune, foreground, background ColorName) {
+	cr.Buffer[x][y] = CanvasBufferCell{foreground, background, primary}
 }
 
 func (cr *CanvasRenderer) Show() {
-	bytes, err := json.Marshal(cr.Buffer)
-	if err != nil {
-		js.Global().Get("console").Call("error", err)
+	cr.Bytes.Reset()
+
+	for _, column := range cr.Buffer {
+		for _, cell := range column {
+			char := []byte(string(cell.Char))
+			for padding := 4 - len(char); padding > 0; padding-- {
+				char = append([]byte(" "), char...)
+			}
+			cr.Bytes.Write(char)
+			cr.Bytes.WriteString(palette[cell.Foreground])
+			cr.Bytes.WriteString(palette[cell.Background])
+		}
 	}
-	js.Global().Call("show", string(bytes))
+	jsBuffer := js.Global().Get("Uint8Array").New(cr.Width * cr.Height * LineLength)
+	js.CopyBytesToJS(jsBuffer, cr.Bytes.Bytes())
+
+	cr.Renderer.Call("show", jsBuffer)
 }
 
 func (cr *CanvasRenderer) Size() (int, int) {
-	val := js.Global().Call("size")
+	val := cr.Renderer.Call("size")
 	return val.Get("width").Int(), val.Get("height").Int()
 }
 
 func (cr *CanvasRenderer) Sync() {
-	size := js.Global().Call("size")
+	cr.Renderer.Call("sync")
+	size := cr.Renderer.Call("size")
 	cr.Width, cr.Height = size.Get("width").Int(), size.Get("height").Int()
 }
 
@@ -114,11 +133,6 @@ var palette [len(Colors)]string
 
 func init() {
 	for i, color := range Colors {
-		palette[i] = fmt.Sprint("#", color)
+		palette[i] = fmt.Sprintf("%x", color)
 	}
-}
-
-// ColorFromPalette resolves color shortcuts by name
-func ColorFromPalette(foreground, background ColorName) string {
-	return Color{palette[foreground], palette[background]}
 }
