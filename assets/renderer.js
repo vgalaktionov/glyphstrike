@@ -21,7 +21,7 @@ class CanvasRenderer {
     ctx.fillRect(0, 0, this.#canvas.width, this.#canvas.height);
 
     ctx.font =
-      '12pt ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro","Fira Mono", "Droid Sans Mono", "Courier New", monospace';
+      '13px ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro","Fira Mono", "Droid Sans Mono", "Courier New", monospace';
   }
 
   clear() {

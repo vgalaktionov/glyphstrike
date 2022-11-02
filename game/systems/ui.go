@@ -6,7 +6,7 @@ import (
 	"github.com/vgalaktionov/roguelike-go/game/resources"
 )
 
-const UIOffsetX = 32
+const UIOffsetX = 42
 const UIOffsetY = 1
 
 // UI system render all elements besides map and console to the screen.
