@@ -4,6 +4,7 @@ class CanvasRenderer {
   #backgroundColor;
   #canvas;
   #decoder;
+  #offscreenCanvas;
   constructor(backgroundColor) {
     this.#canvas = document.getElementById("screen");
     if (!this.#canvas instanceof HTMLCanvasElement)
@@ -12,6 +13,11 @@ class CanvasRenderer {
     this.#canvas.height = window.innerHeight;
     this.#canvas.imageSmoothingEnabled = false;
 
+    this.#offscreenCanvas = document.createElement("canvas");
+    this.#offscreenCanvas.width = window.innerWidth;
+    this.#offscreenCanvas.height = window.innerHeight;
+    this.#offscreenCanvas.imageSmoothingEnabled = false;
+
     this.#backgroundColor = backgroundColor;
     document.body.style.backgroundColor = backgroundColor;
     this.#decoder = new TextDecoder();
@@ -19,15 +25,22 @@ class CanvasRenderer {
     const ctx = this.#canvas.getContext("2d");
     ctx.fillStyle = this.#backgroundColor;
     ctx.fillRect(0, 0, this.#canvas.width, this.#canvas.height);
-
     ctx.font =
-      '13px ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro","Fira Mono", "Droid Sans Mono", "Courier New", monospace';
+      '13px/1.0 ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro","Fira Mono", "Droid Sans Mono", "Courier New", monospace';
+
+    const offscreen = this.#offscreenCanvas.getContext("2d");
+    offscreen.fillStyle = ctx.fillStyle;
+    offscreen.fillRect(0, 0, this.#canvas.width, this.#canvas.height);
+    offscreen.font = ctx.font;
   }
 
   clear() {
     const ctx = this.#canvas.getContext("2d");
     ctx.fillStyle = this.#backgroundColor;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+    const offscreen = this.#offscreenCanvas.getContext("2d");
+    offscreen.fillStyle = this.#backgroundColor;
+    offscreen.fillRect(0, 0, canvas.width, canvas.height);
   }
 
   async pollEvent() {
@@ -91,7 +104,9 @@ class CanvasRenderer {
     let xOffset = 0;
     let yOffset = 0;
     const { width: cellWidth, height: cellHeight } = this.cellSize();
-    const ctx = this.#canvas.getContext("2d", { colorSpace: "display-p3" });
+    const ctx = this.#offscreenCanvas.getContext("2d", {
+      colorSpace: "display-p3",
+    });
     for (let i = 0; i < buf.length; i += LineLength) {
       const char = this.#decoder.decode(buf.slice(i, i + 4)).trimStart();
       const fg = "#" + this.#decoder.decode(buf.slice(i + 4, i + 4 + 6));
@@ -114,11 +129,21 @@ class CanvasRenderer {
         xOffset += cellWidth;
       }
     }
+    const frame = ctx.getImageData(
+      0,
+      0,
+      this.#offscreenCanvas.width,
+      this.#offscreenCanvas.height
+    );
+    const screen = this.#canvas.getContext("2d");
+    screen.putImageData(frame, 0, 0);
   }
 
   sync() {
     this.#canvas.width = window.innerWidth;
     this.#canvas.height = window.innerHeight;
+    this.#offscreenCanvas.width = this.#canvas.width;
+    this.#offscreenCanvas.height = this.#canvas.height;
     this.show();
   }
 }
