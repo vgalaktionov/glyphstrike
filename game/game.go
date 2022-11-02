@@ -150,6 +150,7 @@ func (g *Game) RunN(n int) {
 
 	for i := 0; i < n; i++ {
 		ecs.RunSystems(g.ECS)
+		g.Renderer.Clear()
 		g.Renderer.Show()
 	}
 }

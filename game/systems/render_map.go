@@ -11,22 +11,10 @@ import (
 	. "github.com/vgalaktionov/roguelike-go/game/resources"
 )
 
-// ClearMap only clears the map part of the screen, leaving UI elements intact.
-func clearMap(r draw.Screen) {
-	maxX, maxY := r.Size()
-	for x := UIOffsetX; x < maxX; x++ {
-		for y := UIOffsetY; y < maxY; y++ {
-			r.SetCellContent(x, y, ' ', draw.Black, draw.Black)
-		}
-	}
-}
-
 // RenderMap system is responsible for rendering the map, taking into account player visibility.
 func RenderMap(w *ecs.World) {
 	m := ecs.GetResource[*Map](w)
 	r := ecs.GetResource[Renderer](w)
-
-	clearMap(r)
 
 	for e := range ecs.QueryEntitiesIter(w, Player{}, Viewshed{}) {
 		viewshed := ecs.MustGetEntityComponent[Viewshed](w, e)

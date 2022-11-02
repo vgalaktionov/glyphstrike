@@ -118,4 +118,6 @@ func init() {
 	}
 }
 
-var DEFAULT_STYLE tcell.Style = tcell.StyleDefault.Background(tcell.ColorBlack.TrueColor()).Foreground(tcell.ColorWhite.TrueColor())
+var DEFAULT_STYLE tcell.Style = tcell.StyleDefault.Background(
+	tcell.NewHexColor(int32(Colors[Black])).TrueColor(),
+).Foreground(tcell.NewHexColor(int32(Colors[White])).TrueColor())

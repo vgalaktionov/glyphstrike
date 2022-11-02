@@ -129,9 +129,9 @@ func NewMapRoomsAndCorridors(mapWidth, mapHeight int) *Map {
 func (m *Map) ClearContents() {
 	for x := 0; x < m.Width; x++ {
 		for y := 0; y < m.Height; y++ {
-			m.TileContents[x][y] = nil
+			m.TileContents[x][y] = m.TileContents[x][y][:0]
 		}
-	}
+	}	
 
 }
 
@@ -166,7 +166,6 @@ func (m *Map) Fill(tt TileType) {
 func (m *Map) ApplyRoom(room util.Rect) {
 	for y := room.Y1 + 1; y <= room.Y2; y++ {
 		for x := room.X1 + 1; x <= room.X2; x++ {
-			x := x
 			if m.InBounds(x, y) {
 				m.Tiles[x][y] = FloorTile
 			}
