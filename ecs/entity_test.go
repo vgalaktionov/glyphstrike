@@ -1,6 +1,7 @@
 package ecs_test
 
 import (
+	"sort"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -134,12 +135,13 @@ func TestQueryEntitiesIter(t *testing.T) {
 	ecs.AddEntity(w, testComp2{})
 	ecs.AddEntity(w, testComp1{}, testComp2{})
 
-	results := []ecs.Entity{}
+	results := []int{}
 	for r := range ecs.QueryEntitiesIter(w, testComp1{}, testComp2{}) {
-		results = append(results, r)
+		results = append(results, int(r))
 	}
+	sort.Ints(results)
 
-	assert.Equal(t, results, []ecs.Entity{ecs.Entity(1), ecs.Entity(5)}, "should remove entity correctly")
+	assert.Equal(t, results, []int{1, 5}, "should remove entity correctly")
 }
 
 // noop is used to test iteration
