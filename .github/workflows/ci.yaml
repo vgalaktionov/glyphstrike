@@ -19,8 +19,5 @@ jobs:
       - name: Test All
         run: go test -v ./...
 
-      - name: Benchmark ECS
-        run: go test ./ecs -bench=.
-
-      - name: Benchmark Game
-        run: go test ./game -bench=.
+      - name: Benchmark All
+        run: go test ./... -bench=. -benchmem
