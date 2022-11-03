@@ -141,7 +141,7 @@ func TestQueryEntitiesIter(t *testing.T) {
 	}
 	sort.Ints(results)
 
-	assert.Equal(t, results, []int{1, 5}, "should remove entity correctly")
+	assert.Equal(t, results, []int{1, 5}, "should query multiple entities correctly")
 }
 
 // noop is used to test iteration

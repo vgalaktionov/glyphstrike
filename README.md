@@ -2,7 +2,7 @@
 
 > A Roguelike implementation in Go.
 
-![CI/CD](https://github.com/vgalaktionov/glyphstrike/actions/workflows/ci.yml/badge.svg)
+![CI/CD](https://github.com/vgalaktionov/glyphstrike/actions/workflows/ci.yaml/badge.svg)
 
 ## Development
 
