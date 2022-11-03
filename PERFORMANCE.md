@@ -1,6 +1,13 @@
 # Performance optimization history
 
-## Initial (very naive) implementation, halfway step 6
+It's good to have the performance in mind from the get go, and even this tiny game is already showing signs
+of slowing down when trying to move very fast.
+Let's get a simple benchmark going and improve it as we go.
+
+We inject a special system to randomly generate player input, and extend the game engine with an alternative
+run method that will exit after N steps.
+
+## Initial (very naive) implementation, halfway RLTK step 6 in terms of features
 
 ### Bench
 
@@ -51,6 +58,10 @@ Showing top 10 nodes out of 29
        1MB   0.6% 99.02%        1MB   0.6%  runtime.malg
          0     0% 99.02%        5MB  3.00%  github.com/gdamore/tcell/v2.(*simscreen).Show
 ```
+
+We can see that a ridiculous amount of CPU is spent on instantiating color objects at runtime.
+Luckily, we have a limited palette, and it's easy to precompute these in an `init()` function.
+Let's see if that helps. Along the way, we can simplify some unnecessary abstractions.
 
 ## After optimizing color lookups:
 
@@ -103,3 +114,15 @@ Showing top 10 nodes out of 33
     1.16MB  0.65% 96.36%     1.16MB  0.65%  runtime/pprof.StartCPUProfile
        1MB  0.56% 96.92%     1.50MB  0.84%  github.com/vgalaktionov/roguelike-go/game/systems.RenderMap
 ```
+
+Now we can see that hashmap access is taking up a large part of the turn processing.
+This happens in the ECS, and will only increase exponentially with number of entities and components.
+Time to fix that. Along the way, let's add tests and benchmarks for the ECS separately.
+
+Currently we are storing entities in hashmaps, and their components in nested hashmaps.
+While hashes are pretty fast, this adds up - and we can elide this overhead if we store them in arrays and access by index. In theory that should have massive cache locality benefits too.
+
+Furthermore, we also access the component maps for the purpose of querying - but this can be avoided by using bitmap indices to track which entity has which components.
+
+The one downside is requiring a tiny bit more boilerplate, as we need global static sequential unique integers for component ids this way. I thought about code generation with `// go:generate` but it's not worth it at this stage.
+This is Go after all, typing things is part of the fun.
