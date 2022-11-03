@@ -17,6 +17,12 @@ func AddEntity(w *World, components ...Component) Entity {
 	return w.lastEntityID
 }
 
+// HasEntity checks if a given entity exists (mostly useful for testing)
+func HasEntity(w *World, e Entity) bool {
+	_, ok := w.entities[e]
+	return ok
+}
+
 // RemoveEntity removes an entity and all associated components by ID.
 func RemoveEntity(w *World, ent Entity) {
 	delete(w.entities, ent)
@@ -28,7 +34,7 @@ func RemoveEntity(w *World, ent Entity) {
 // EntityNotFound is a sentinel value for missing entities.
 const EntityNotFound = Entity(-1)
 
-// QueryEntitiesSingle takes templates (empty components) and returns the first entity with these components, or -1.
+// QueryEntitiesSingle takes templates (empty components) and returns the first entity with these components, or error.
 func QueryEntitiesSingle(w *World, templates ...Component) (Entity, error) {
 
 	for e := range w.entities {

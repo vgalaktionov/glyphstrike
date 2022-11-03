@@ -2,6 +2,8 @@
 
 > A Roguelike implementation in Go.
 
+![CI/CD](https://github.com/vgalaktionov/glyphstrike/actions/workflows/ci.yml/badge.svg)
+
 ## Development
 
 ### Running in development with the default console renderer:

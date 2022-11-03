@@ -96,7 +96,7 @@ Showing top 10 nodes out of 51
      230ms  3.44% 78.48%     3920ms 58.59%  github.com/vgalaktionov/roguelike-go/game/systems.RenderMap
 ```
 
-## Top memory functions
+### Top memory functions
 
 ```
 Showing nodes accounting for 173.75MB, 96.92% of 179.28MB total
@@ -126,3 +126,66 @@ Furthermore, we also access the component maps for the purpose of querying - but
 
 The one downside is requiring a tiny bit more boilerplate, as we need global static sequential unique integers for component ids this way. I thought about code generation with `// go:generate` but it's not worth it at this stage.
 This is Go after all, typing things is part of the fun.
+
+#### Adding entities:
+
+Oof, that's pretty slow off the bat:
+
+```
+BenchmarkAddEntity
+BenchmarkAddEntity-3     3967592               278.8 ns/op
+```
+
+#### Checking single entity exists
+
+Slightly better but still not optimal (we test with a lot of entities):
+
+```
+BenchmarkHasEntity
+BenchmarkHasEntity-3    15449060                95.87 ns/op
+```
+
+#### Adding entity with components
+
+Two empty components makes it even slower:
+
+```
+BenchmarkAddEntityComponent
+BenchmarkAddEntityComponent-3            1000000              1481 ns/op
+```
+
+#### Checking entity has component
+
+Not as bad as expected given the multiple map accesses, but still painful
+
+```
+BenchmarkHasEntityComponent
+BenchmarkHasEntityComponent-3           10271796               146.6 ns/op
+```
+
+#### Removing entities
+
+Also much slower than we'd like it to be.
+
+```
+BenchmarkRemoveEntity
+BenchmarkRemoveEntity-3                  2190624               593.5 ns/op
+```
+
+#### Querying multiple entities for components
+
+Here is the real killer.
+
+```
+BenchmarkQueryEntitiesIter
+BenchmarkQueryEntitiesIter-3               10000           1449094 ns/op
+```
+
+#### Querying the first entity for components
+
+Also this is not great, because in the worst case it does almost the same amount of work:
+
+```
+BenchmarkQueryEntitiesSingle
+BenchmarkQueryEntitiesSingle-3             10000            302499 ns/op
+```
