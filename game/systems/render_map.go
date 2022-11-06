@@ -16,7 +16,7 @@ func RenderMap(w *ecs.World) {
 	m := ecs.GetResource[*Map](w)
 	r := ecs.GetResource[Renderer](w)
 
-	for e := range ecs.QueryEntitiesIter(w, Player{}, Viewshed{}) {
+	for _, e := range ecs.QueryEntitiesIter(w, Player{}, Viewshed{}) {
 		viewshed := ecs.MustGetEntityComponent[Viewshed](w, e)
 
 		for x, col := range m.Tiles {

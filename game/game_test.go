@@ -80,9 +80,9 @@ func NewSimulatedGameRoomsAndCorridors() *game.Game {
 
 	m := resources.NewMapRoomsAndCorridors(mapX, mapY)
 
-	ecs.SetResource(w, m)
-	ecs.SetResource(w, resources.Renderer{Screen: screen})
-	ecs.SetResource(w, resources.PreRun)
+	ecs.AddResource(w, m)
+	ecs.AddResource(w, resources.Renderer{Screen: screen})
+	ecs.AddResource(w, resources.PreRun)
 
 	playerX, playerY := m.Rooms[0].Center()
 	ecs.AddEntity(

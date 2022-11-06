@@ -24,7 +24,7 @@ func ProcessMonsterAI(w *ecs.World) {
 	playerPos := ecs.MustGetEntityComponent[Position](w, player)
 	m := ecs.GetResource[*resources.Map](w)
 
-	for e := range ecs.QueryEntitiesIter(w, Position{}, Viewshed{}, MonsterAI{}, Name("")) {
+	for _, e := range ecs.QueryEntitiesIter(w, Position{}, Viewshed{}, MonsterAI{}, Name("")) {
 		vs := ecs.MustGetEntityComponent[Viewshed](w, e)
 		name := ecs.MustGetEntityComponent[Name](w, e)
 		pos := ecs.MustGetEntityComponent[Position](w, e)

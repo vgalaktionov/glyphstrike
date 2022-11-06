@@ -17,8 +17,8 @@ type World struct {
 	componentIndices []*bitset.BitSet
 	components       [][]Component
 	systems          []System
-	resources        map[RTag]Resource
-	events           map[ETag]chan Event
+	resources        []Resource
+	events           []chan Event
 	eventSystems     []System
 }
 
@@ -34,8 +34,8 @@ func NewWorld() *World {
 		make([]*bitset.BitSet, PreAllocateComponents),
 		make([][]Component, PreAllocateComponents),
 		nil,
-		make(map[RTag]Resource),
-		make(map[ETag]chan Event),
+		[]Resource{},
+		[]chan Event{},
 		nil,
 	}
 	for i := 0; i < len(w.componentIndices); i++ {

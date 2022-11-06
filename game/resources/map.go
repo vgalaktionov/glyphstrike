@@ -131,7 +131,7 @@ func (m *Map) ClearContents() {
 		for y := 0; y < m.Height; y++ {
 			m.TileContents[x][y] = m.TileContents[x][y][:0]
 		}
-	}	
+	}
 
 }
 
@@ -205,8 +205,6 @@ func (m *Map) GetGridFor(x, y int) *paths.Grid {
 	return g
 }
 
-const MapTag = ecs.RTag("Map")
-
-func (*Map) RTag() ecs.RTag {
-	return MapTag
+func (*Map) RID() ecs.RID {
+	return mapID
 }

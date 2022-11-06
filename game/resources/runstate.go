@@ -11,6 +11,6 @@ const (
 	MonsterTurn
 )
 
-func (GameState) RTag() ecs.RTag {
-	return ecs.RTag("GameState")
+func (GameState) RID() ecs.RID {
+	return runStateID
 }

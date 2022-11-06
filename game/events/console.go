@@ -7,8 +7,6 @@ type ConsoleEvent struct {
 	Message string
 }
 
-const ConsoleEventTag = ecs.ETag("ConsoleEvent")
-
-func (ConsoleEvent) ETag() ecs.ETag {
-	return ConsoleEventTag
+func (ConsoleEvent) EID() ecs.EID {
+	return consoleID
 }

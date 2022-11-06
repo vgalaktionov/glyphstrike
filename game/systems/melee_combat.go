@@ -10,7 +10,7 @@ import (
 
 // MeleeCombat handles all melee combat interactions between entities and queues resolved damage to be applied.
 func MeleeCombat(w *ecs.World) {
-	for e := range ecs.QueryEntitiesIter(w, WantsToMelee{}, Name(""), CombatStats{}) {
+	for _, e := range ecs.QueryEntitiesIter(w, WantsToMelee{}, Name(""), CombatStats{}) {
 		stats := ecs.MustGetEntityComponent[CombatStats](w, e)
 		target := ecs.MustGetEntityComponent[WantsToMelee](w, e)
 		if stats.HP > 0 {

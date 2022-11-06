@@ -10,6 +10,6 @@ type CombatStats struct {
 	Power   int
 }
 
-func (CombatStats) CTag() ecs.CID {
-	return ecs.CID("CombatStats")
+func (CombatStats) CID() ecs.CID {
+	return combatStatsID
 }

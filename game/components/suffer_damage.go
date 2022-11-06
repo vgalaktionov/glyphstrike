@@ -9,15 +9,15 @@ type SufferDamage struct {
 	Damage []int
 }
 
-func (SufferDamage) CTag() ecs.CID {
-	return ecs.CID("SufferDamage")
+func (SufferDamage) CID() ecs.CID {
+	return sufferDamageID
 }
 
 func NewDamage(w *ecs.World, dmg int, e ecs.Entity) {
-	var existingDamage *SufferDamage
+	var existingDamage SufferDamage
 	existingDamage, err := ecs.GetEntityComponent[SufferDamage](w, e)
 	if err != nil {
-		existingDamage = &SufferDamage{}
+		existingDamage = SufferDamage{}
 	}
 	newDamage := SufferDamage{Damage: append(existingDamage.Damage, dmg)}
 	ecs.SetEntityComponent(w, newDamage, e)

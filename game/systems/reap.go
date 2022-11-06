@@ -7,7 +7,7 @@ import (
 
 // Reap disposes of dead entities.
 func Reap(w *ecs.World) {
-	for e := range ecs.QueryEntitiesIter(w, CombatStats{}) {
+	for _, e := range ecs.QueryEntitiesIter(w, CombatStats{}) {
 		stats := ecs.MustGetEntityComponent[CombatStats](w, e)
 
 		if stats.HP <= 0 {

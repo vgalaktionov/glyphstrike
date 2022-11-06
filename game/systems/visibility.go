@@ -9,7 +9,7 @@ import (
 // Update visibility computes visibility field for affected entities each tick using a raycasting algorithm.
 func UpdateVisibility(w *ecs.World) {
 
-	for e := range ecs.QueryEntitiesIter(w, Viewshed{}, Position{}) {
+	for _, e := range ecs.QueryEntitiesIter(w, Viewshed{}, Position{}) {
 		viewshed := ecs.MustGetEntityComponent[Viewshed](w, e)
 		pos := ecs.MustGetEntityComponent[Position](w, e)
 		m := ecs.GetResource[*resources.Map](w)

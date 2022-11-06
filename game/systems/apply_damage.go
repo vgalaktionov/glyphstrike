@@ -7,7 +7,7 @@ import (
 
 // ApplyDamage manages the application of damage from all sources to entities.
 func ApplyDamage(w *ecs.World) {
-	for e := range ecs.QueryEntitiesIter(w, SufferDamage{}, CombatStats{}) {
+	for _, e := range ecs.QueryEntitiesIter(w, SufferDamage{}, CombatStats{}) {
 		sd := ecs.MustGetEntityComponent[SufferDamage](w, e)
 		stats := ecs.MustGetEntityComponent[CombatStats](w, e)
 

@@ -19,7 +19,7 @@ func Render(w *ecs.World) {
 	}
 	playerViewshed := ecs.MustGetEntityComponent[Viewshed](w, playerEnt)
 
-	for e := range ecs.QueryEntitiesIter(w, Renderable{}, Position{}) {
+	for _, e := range ecs.QueryEntitiesIter(w, Renderable{}, Position{}) {
 		pos := ecs.MustGetEntityComponent[Position](w, e)
 
 		if !playerViewshed.View.IsVisible(pos.X, pos.Y) {

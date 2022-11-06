@@ -11,6 +11,6 @@ type Viewshed struct {
 	View   *fov.View
 }
 
-func (Viewshed) CTag() ecs.CID {
-	return ecs.CID("Viewshed")
+func (Viewshed) CID() ecs.CID {
+	return viewshedID
 }

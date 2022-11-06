@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/bits-and-blooms/bitset"
+	"github.com/vgalaktionov/roguelike-go/util"
 )
 
 // CID is the type of a component
@@ -45,26 +46,25 @@ func GetEntityComponent[C Component](w *World, e Entity) (C, error) {
 
 // SetEntityComponent replaces the given component for an entity.
 func SetEntityComponent(w *World, c Component, e Entity) {
-	if w.components[c.CID()] == nil {
-		w.components[c.CID()] = make([]Component, e+1)
+	cid := c.CID()
+	if w.components[cid] == nil {
+		w.components[cid] = make([]Component, e+1)
 	}
-	if w.componentIndices[c.CID()] == nil {
-		w.componentIndices[c.CID()] = bitset.New(uint(e))
+	if w.componentIndices[cid] == nil {
+		w.componentIndices[cid] = bitset.New(uint(util.MinInt(PreAllocateEntities, len(w.entities))))
 	}
-	if diff := int(e) - len(w.components[c.CID()]) + 1; diff > 0 {
-		w.components[c.CID()] = append(w.components[c.CID()], make([]Component, diff)...)
+	if diff := int(e) - len(w.components[cid]) + 1; diff > 0 {
+		w.components[cid] = append(w.components[cid], make([]Component, diff)...)
 	}
-	w.components[c.CID()][e] = c
-	w.componentIndices[c.CID()].Set(uint(e))
+	w.components[cid][e] = c
+	w.componentIndices[cid].Set(uint(e))
 }
 
 // RemoveEntityComponent deletes the given component for an entity.
 func RemoveEntityComponent[C Component](w *World, e Entity) {
-	cid := (*new(C)).CID()
-	if len(w.components)+1 > int(e) {
+	if len(w.components)+1 > int(e) && len(w.componentIndices)+1 > int(e) {
+		cid := (*new(C)).CID()
 		w.components[cid][e] = nil
-	}
-	if len(w.componentIndices)+1 > int(e) {
-		w.componentIndices[cid] = w.componentIndices[cid].Clear(uint(e))
+		w.componentIndices[cid].Clear(uint(e))
 	}
 }

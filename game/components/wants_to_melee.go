@@ -9,6 +9,6 @@ type WantsToMelee struct {
 	Target ecs.Entity
 }
 
-func (WantsToMelee) CTag() ecs.CID {
-	return ecs.CID("WantsToMelee")
+func (WantsToMelee) CID() ecs.CID {
+	return wantsToMeleeID
 }

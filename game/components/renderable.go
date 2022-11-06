@@ -12,6 +12,6 @@ type Renderable struct {
 	Background draw.ColorName
 }
 
-func (Renderable) CTag() ecs.CID {
-	return ecs.CID("Renderable")
+func (Renderable) CID() ecs.CID {
+	return renderableID
 }

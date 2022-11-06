@@ -9,8 +9,6 @@ type Renderer struct {
 	draw.Screen
 }
 
-const RendererTag = ecs.RTag("Renderer")
-
-func (Renderer) RTag() ecs.RTag {
-	return RendererTag
+func (Renderer) RID() ecs.RID {
+	return rendererID
 }

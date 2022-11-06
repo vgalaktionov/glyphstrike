@@ -9,6 +9,12 @@ github.com/gdamore/encoding v1.0.0 h1:+7OoQ1Bc6eTm5niUzBa0Ctsh6JbMW6Ra+YNuAtDBdk
 github.com/gdamore/encoding v1.0.0/go.mod h1:alR0ol34c49FCSBLjhosxzcPHQbf2trDkoo5dl+VrEg=
 github.com/gdamore/tcell/v2 v2.5.3 h1:b9XQrT6QGbgI7JvZOJXFNczOQeIYbo8BfeSMzt2sAV0=
 github.com/gdamore/tcell/v2 v2.5.3/go.mod h1:wSkrPaXoiIWZqW/g7Px4xc79di6FTcpB8tvaKJ6uGBo=
+github.com/kelindar/bitmap v1.4.1 h1:Ih0BWMYXkkZxPMU536DsQKRhdvqFl7tuNjImfLJWC6E=
+github.com/kelindar/bitmap v1.4.1/go.mod h1:4QyD+TDbfgy8oYB9oC4JzqfudYCYIjhbSP7iLraP+28=
+github.com/kelindar/simd v1.1.2 h1:KduKb+M9cMY2HIH8S/cdJyD+5n5EGgq+Aeeleos55To=
+github.com/kelindar/simd v1.1.2/go.mod h1:inq4DFudC7W8L5fhxoeZflLRNpWSs0GNx6MlWFvuvr0=
+github.com/klauspost/cpuid/v2 v2.0.12 h1:p9dKCg8i4gmOxtv35DvrYoWqYzQrvEVdjQ762Y0OqZE=
+github.com/klauspost/cpuid/v2 v2.0.12/go.mod h1:g2LTdtYhdyuGPqyWyv7qRAmj1WBqxuObKfj5c0PQa7c=
 github.com/lucasb-eyer/go-colorful v1.2.0 h1:1nnpGOrhyZZuNyfu1QjKiUICQ74+3FNCN69Aj6K7nkY=
 github.com/lucasb-eyer/go-colorful v1.2.0/go.mod h1:R4dSotOR9KMtayYi1e77YzuveK+i7ruzyGqttikkLy0=
 github.com/mattn/go-runewidth v0.0.13 h1:lTGmDsbAYt5DmK6OnoV7EuIF1wEIFAcxld6ypU4OSgU=

@@ -7,6 +7,6 @@ type Position struct {
 	X, Y int
 }
 
-func (Position) CTag() ecs.CID {
-	return ecs.CID("Position")
+func (Position) CID() ecs.CID {
+	return positionID
 }
