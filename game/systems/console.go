@@ -17,7 +17,8 @@ func Console(w *ecs.World) {
 	lines := []string{}
 	r := ecs.GetResource[Renderer](w)
 
-	_, maxY := r.Size()
+	_, screenY := r.Size()
+	maxY := screenY - ConsoleOffsetY
 	// loop forever, as we run in background
 	for {
 
@@ -27,7 +28,7 @@ func Console(w *ecs.World) {
 		for y, line := range lines[util.MaxInt(len(lines)-maxY, 0):] {
 			// We want to repaint the entire line, so pad it out
 			str := fmt.Sprintf("%-*s", UIOffsetX-1, line)
-			draw.DrawStr(r, 1, y+UIOffsetY+1, draw.White, draw.Black, str)
+			draw.DrawStr(r, 1, y+ConsoleOffsetY, draw.White, draw.Black, str)
 		}
 	}
 }

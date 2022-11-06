@@ -25,6 +25,13 @@ func DrawStr(r Screen, x, y int, foreground, background ColorName, str string) {
 	}
 }
 
+// DrawHBar draws a single colored horizontal bar to the screen.
+func DrawHBar(r Screen, x1, x2, y int, color ColorName) {
+	for x := x1; x < x2; x++ {
+		r.SetCellContent(x, y, '█', color, color)
+	}
+}
+
 // DrawBox draws a rectangular box with the standard box drawing characters, and (optional) text contents.
 func DrawBox(r Screen, x1, y1, x2, y2 int, foreground, background ColorName, text string) {
 	if y2 < y1 {
