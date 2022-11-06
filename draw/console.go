@@ -29,6 +29,15 @@ func NewScreen() Screen {
 	return &ConsoleRenderer{screen}
 }
 
+func NewSimulatedScreen() Screen {
+	renderer := tcell.NewSimulationScreen("UTF-8")
+	renderer.Init()
+	renderer.SetSize(300, 300)
+	renderer.SetStyle(DEFAULT_STYLE)
+	renderer.Clear()
+	return &ConsoleRenderer{Screen: renderer}
+}
+
 func (cr *ConsoleRenderer) CleanUp() {
 	cr.Clear()
 	cr.ShowCursor(0, 0)
@@ -58,7 +67,15 @@ func (cr *ConsoleRenderer) PollEvent() ScreenEvent {
 			return &KeyEvent{Key: KeyRune, Rune: event.Rune()}
 		}
 	case *tcell.EventMouse:
-		return &MouseEvent{}
+		btns := event.Buttons()
+		x, y := event.Position()
+		if btns&tcell.Button1 > 0 {
+			return &MouseEvent{X: x, Y: y, Button: Primary}
+		} else if btns&tcell.Button2 > 0 {
+			return &MouseEvent{X: x, Y: y, Button: Secondary}
+		} else {
+			return &MouseEvent{X: x, Y: y}
+		}
 
 	case *tcell.EventResize:
 		return &ResizeEvent{}
@@ -93,6 +110,8 @@ func (cr *ConsoleRenderer) PostEvent(ev ScreenEvent) error {
 			return cr.Screen.PostEvent(tcell.NewEventMouse(event.X, event.Y, tcell.ButtonPrimary, tcell.ModNone))
 		case Secondary:
 			return cr.Screen.PostEvent(tcell.NewEventMouse(event.X, event.Y, tcell.ButtonSecondary, tcell.ModNone))
+		default:
+			return cr.Screen.PostEvent(tcell.NewEventMouse(event.X, event.Y, tcell.ButtonNone, tcell.ModNone))
 		}
 
 	case *ResizeEvent:

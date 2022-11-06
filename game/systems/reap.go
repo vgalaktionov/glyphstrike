@@ -10,6 +10,10 @@ import (
 
 // Reap disposes of dead entities.
 func Reap(w *ecs.World) {
+	gs := ecs.GetResource[resources.GameState](w)
+	if gs == resources.AwaitingInput {
+		return
+	}
 	playerEnt := ecs.GetResource[resources.PlayerEntity](w).Entity()
 	for _, e := range ecs.QueryEntitiesIter(w, CombatStats{}, Name("")) {
 		stats := ecs.MustGetEntityComponent[CombatStats](w, e)

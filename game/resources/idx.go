@@ -7,4 +7,5 @@ const (
 	rendererID
 	runStateID
 	playerID
+	mousePositionID
 )

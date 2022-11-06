@@ -25,22 +25,29 @@ type Game struct {
 
 // NewGame abstracts away the technical details of setting up a terminal to render to.
 // It also sets up default systems and events.
-func NewGame() *Game {
+func NewGame(simulated bool) *Game {
 	rand.Seed(time.Now().UnixNano())
 	encoding.Register()
 
-	screen := draw.NewScreen()
+	var screen draw.Screen
+	if simulated {
+		screen = draw.NewSimulatedScreen()
+	} else {
+		screen = draw.NewScreen()
+	}
 
 	w := ecs.NewWorld()
 
 	ecs.RegisterEventSystem(w, systems.Console, events.ConsoleEvent{})
 
-	ecs.RegisterSystem(w, systems.UpdateVisibility)
-
+	if simulated {
+		ecs.RegisterSystem(w, systems.RandomPlayer)
+	}
 	// only one of these two will run
 	ecs.RegisterSystem(w, systems.HandlePlayerInput)
 	ecs.RegisterSystem(w, systems.ProcessMonsterAI)
 
+	ecs.RegisterSystem(w, systems.UpdateVisibility)
 	ecs.RegisterSystem(w, systems.MapIndexing)
 	ecs.RegisterSystem(w, systems.MeleeCombat)
 	ecs.RegisterSystem(w, systems.ApplyDamage)
@@ -61,6 +68,7 @@ func NewGame() *Game {
 	ecs.AddResource(w, m)
 	ecs.AddResource(w, resources.Renderer{Screen: screen})
 	ecs.AddResource(w, resources.PreRun)
+	ecs.AddResource(w, resources.MousePosition{})
 
 	playerX, playerY := m.Rooms[0].Center()
 	playerEnt := ecs.AddEntity(

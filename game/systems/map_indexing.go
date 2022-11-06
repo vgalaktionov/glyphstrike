@@ -8,6 +8,10 @@ import (
 
 // MapIndexing deals with updating map state based on the ECS data
 func MapIndexing(w *ecs.World) {
+	gs := ecs.GetResource[resources.GameState](w)
+	if gs == resources.AwaitingInput {
+		return
+	}
 	m := ecs.GetResource[*resources.Map](w)
 	m.PopulateBlocked()
 	m.ClearContents()

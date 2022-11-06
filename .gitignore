@@ -3,3 +3,5 @@
 # profiling output
 *.out
 *.test
+# build output
+assets/*.wasm

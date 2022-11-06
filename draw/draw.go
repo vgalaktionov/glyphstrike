@@ -61,3 +61,20 @@ func DrawBox(r Screen, x1, y1, x2, y2 int, foreground, background ColorName, tex
 
 	DrawStr(r, x1+1, y1+1, foreground, background, text)
 }
+
+// FIll fills a rectangular box with the provided color.
+func Fill(r Screen, x1, y1, x2, y2 int, color ColorName) {
+	if y2 < y1 {
+		y1, y2 = y2, y1
+	}
+	if x2 < x1 {
+		x1, x2 = x2, x1
+	}
+
+	// Draw borders
+	for col := x1; col <= x2; col++ {
+		for row := y1; row < y2; row++ {
+			r.SetCellContent(col, row, ' ', color, color)
+		}
+	}
+}

@@ -44,6 +44,7 @@ class CanvasRenderer {
   }
 
   async pollEvent() {
+    const { width, height } = this.cellSize();
     return new Promise((resolve, reject) => {
       const listenEvent = (ev) => {
         ev.preventDefault();
@@ -52,18 +53,18 @@ class CanvasRenderer {
         } else if (ev instanceof MouseEvent) {
           resolve({
             type: "mouse",
-            x: ev.screenX,
-            y: ev.screenY,
+            x: ev.screenX / width,
+            y: ev.screenY / height,
             button: ev.button,
           });
         }
         window.removeEventListener("keydown", listenEvent);
+        window.removeEventListener("touchstart", listenEvent);
         window.removeEventListener("mousedown", listenEvent);
-        window.removeEventListener("mousemove", listenEvent);
       };
       window.addEventListener("keydown", listenEvent);
-      window.removeEventListener("mousedown", listenEvent);
-      window.addEventListener("mousemove", listenEvent);
+      window.addEventListener("touchstart", listenEvent);
+      window.addEventListener("mousedown", listenEvent);
     });
   }
 
@@ -100,7 +101,6 @@ class CanvasRenderer {
   }
 
   show(buf) {
-    console.debug("called show");
     let xOffset = 0;
     let yOffset = 0;
     const { width: cellWidth, height: cellHeight } = this.cellSize();
@@ -113,6 +113,7 @@ class CanvasRenderer {
       const bg =
         "#" + this.#decoder.decode(buf.slice(i + 4 + 6, i + LineLength));
       ctx.fillStyle = bg;
+      ctx.strokeStyle = bg;
       // draw slightly more to hide ugly gaps
       ctx.fillRect(
         xOffset,
@@ -121,6 +122,7 @@ class CanvasRenderer {
         cellHeight + 3
       );
       ctx.fillStyle = fg;
+      ctx.strokeStyle = fg;
       ctx.fillText(char, xOffset, yOffset);
 
       yOffset += cellHeight;

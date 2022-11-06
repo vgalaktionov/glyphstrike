@@ -14,7 +14,7 @@ import (
 // HandlePlayerInput processes keyboard/mouse input and resize events.
 func HandlePlayerInput(w *ecs.World) {
 	gs := ecs.GetResource[resources.GameState](w)
-	if gs != resources.PlayerTurn {
+	if gs != resources.AwaitingInput {
 		return
 	}
 	r := ecs.GetResource[resources.Renderer](w)
@@ -67,9 +67,11 @@ func HandlePlayerInput(w *ecs.World) {
 		}
 
 		tryMovePlayer(w, playerEnt, deltaX, deltaY)
+		ecs.SetResource(w, resources.PlayerTurn)
 
 	case *draw.MouseEvent:
-		return
+		log.Println("mouse event")
+		ecs.SetResource(w, resources.MousePosition{X: ev.X, Y: ev.Y, Moved: true})
 	}
 
 }

@@ -12,7 +12,7 @@ func UpdateTurn(w *ecs.World) {
 
 	switch previousState {
 	case resources.PreRun, resources.MonsterTurn:
-		ecs.SetResource(w, resources.PlayerTurn)
+		ecs.SetResource(w, resources.AwaitingInput)
 	case resources.PlayerTurn:
 		ecs.SetResource(w, resources.MonsterTurn)
 	}

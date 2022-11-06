@@ -31,7 +31,8 @@ func (*KeyEvent) ScreenEvent() {}
 type MouseButton int
 
 const (
-	Primary MouseButton = iota
+	None MouseButton = iota
+	Primary
 	Secondary
 )
 

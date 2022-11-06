@@ -49,6 +49,11 @@ func NewScreen() Screen {
 	return &CanvasRenderer{Renderer: renderer, Buffer: NewCanvasBuffer(w, h), Bytes: buf, Width: w, Height: h}
 }
 
+// NewSimulatedScreen is just a screen for canvas
+func NewSimulatedScreen() Screen {
+	return NewScreen()
+}
+
 func (cr *CanvasRenderer) CleanUp() {
 
 }
@@ -77,9 +82,18 @@ func (cr *CanvasRenderer) PollEvent() ScreenEvent {
 			return &KeyEvent{Key: KeyUp}
 		case "ArrowDown":
 			return &KeyEvent{Key: KeyDown}
+		default:
+			return &KeyEvent{Key: KeyRune, Rune: rune(jsEvent.Get("key").String()[0])}
 		}
 	case "mouse":
-		return &MouseEvent{}
+		btn := jsEvent.Get("button").Int()
+		var button MouseButton
+		if btn == 0 {
+			button = Primary
+		} else if btn == 1 {
+			button = Secondary
+		}
+		return &MouseEvent{X: jsEvent.Get("x").Int(), Y: jsEvent.Get("y").Int(), Button: button}
 	}
 	return nil
 }

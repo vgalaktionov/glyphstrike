@@ -5,11 +5,16 @@ import (
 
 	"github.com/vgalaktionov/roguelike-go/ecs"
 	. "github.com/vgalaktionov/roguelike-go/game/components"
+	"github.com/vgalaktionov/roguelike-go/game/resources"
 	"github.com/vgalaktionov/roguelike-go/util"
 )
 
 // MeleeCombat handles all melee combat interactions between entities and queues resolved damage to be applied.
 func MeleeCombat(w *ecs.World) {
+	gs := ecs.GetResource[resources.GameState](w)
+	if gs == resources.AwaitingInput {
+		return
+	}
 	for _, e := range ecs.QueryEntitiesIter(w, WantsToMelee{}, Name(""), CombatStats{}) {
 		stats := ecs.MustGetEntityComponent[CombatStats](w, e)
 		target := ecs.MustGetEntityComponent[WantsToMelee](w, e)

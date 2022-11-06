@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	g := game.NewGame()
+	g := game.NewGame(false)
 
 	// Hook up stdlib logging output to the game window console
 	log.SetFlags(0)
