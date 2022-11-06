@@ -22,17 +22,16 @@ func ProcessMonsterAI(w *ecs.World) {
 		log.Fatalln("no player found")
 	}
 	playerPos := ecs.MustGetEntityComponent[Position](w, player)
+	playerEnt := ecs.GetResource[resources.PlayerEntity](w).Entity()
 	m := ecs.GetResource[*resources.Map](w)
 
 	for _, e := range ecs.QueryEntitiesIter(w, Position{}, Viewshed{}, MonsterAI{}, Name("")) {
 		vs := ecs.MustGetEntityComponent[Viewshed](w, e)
-		name := ecs.MustGetEntityComponent[Name](w, e)
 		pos := ecs.MustGetEntityComponent[Position](w, e)
 
 		dist := util.Distance(pos.X, pos.Y, playerPos.X, playerPos.Y)
 		if dist < 1.5 {
-			// attack goes here
-			log.Printf("%s shouts insults.", name)
+			ecs.SetEntityComponent(w, WantsToMelee{Target: playerEnt}, e)
 			continue
 		}
 

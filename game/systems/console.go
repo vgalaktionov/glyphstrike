@@ -1,6 +1,8 @@
 package systems
 
 import (
+	"fmt"
+
 	"github.com/vgalaktionov/roguelike-go/draw"
 	"github.com/vgalaktionov/roguelike-go/ecs"
 	"github.com/vgalaktionov/roguelike-go/game/events"
@@ -23,7 +25,9 @@ func Console(w *ecs.World) {
 		lines = append(lines, ev.(events.ConsoleEvent).Message)
 
 		for y, line := range lines[util.MaxInt(len(lines)-maxY, 0):] {
-			draw.DrawStr(r, 1, y+UIOffsetY+1, draw.White, draw.Black, line[:util.MinInt(UIOffsetX-1, len(line))])
+			// We want to repaint the entire line, so pad it out
+			str := fmt.Sprintf("%-*s", UIOffsetX-1, line)
+			draw.DrawStr(r, 1, y+UIOffsetY+1, draw.White, draw.Black, str)
 		}
 	}
 }

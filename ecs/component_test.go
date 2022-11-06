@@ -21,14 +21,13 @@ func TestMustGetEntityComponent(t *testing.T) {
 }
 
 func BenchmarkMustGetEntityComponent(b *testing.B) {
-	b.StopTimer()
 	w := ecs.NewWorld()
-	for i := 0; i < 1000; i++ {
+	for i := 0; i < benchWorldSize; i++ {
 		ecs.AddEntity(w, testComp1{})
 	}
-	b.StartTimer()
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		ecs.MustGetEntityComponent[testComp1](w, ecs.Entity(i%1000))
+		ecs.MustGetEntityComponent[testComp1](w, ecs.Entity(i%benchWorldSize))
 	}
 }
 
@@ -46,14 +45,13 @@ func TestGetEntityComponent(t *testing.T) {
 }
 
 func BenchmarkGetEntityComponent(b *testing.B) {
-	b.StopTimer()
 	w := ecs.NewWorld()
-	for i := 0; i < 1000; i++ {
+	for i := 0; i < benchWorldSize; i++ {
 		ecs.AddEntity(w, testComp1{})
 	}
-	b.StartTimer()
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		ecs.GetEntityComponent[testComp1](w, ecs.Entity(i%1000))
+		ecs.GetEntityComponent[testComp1](w, ecs.Entity(i%benchWorldSize))
 	}
 }
 
@@ -67,14 +65,13 @@ func TestSetEntityComponent(t *testing.T) {
 }
 
 func BenchmarkSetEntityComponent(b *testing.B) {
-	b.StopTimer()
 	w := ecs.NewWorld()
-	for i := 0; i < 1000; i++ {
+	for i := 0; i < benchWorldSize; i++ {
 		ecs.AddEntity(w, testComp1{})
 	}
-	b.StartTimer()
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		ecs.SetEntityComponent(w, testComp1{}, ecs.Entity(i%1000))
+		ecs.SetEntityComponent(w, testComp1{}, ecs.Entity(i%benchWorldSize))
 	}
 }
 
@@ -89,13 +86,12 @@ func TestRemoveEntityComponent(t *testing.T) {
 }
 
 func BenchmarkRemoveEntityComponent(b *testing.B) {
-	b.StopTimer()
 	w := ecs.NewWorld()
-	for i := 0; i < 1000; i++ {
+	for i := 0; i < benchWorldSize; i++ {
 		ecs.AddEntity(w, testComp1{}, testComp2{})
 	}
-	b.StartTimer()
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		ecs.RemoveEntityComponent[testComp1](w, ecs.Entity(i&1000))
+		ecs.RemoveEntityComponent[testComp1](w, ecs.Entity(i&benchWorldSize))
 	}
 }

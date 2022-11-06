@@ -85,7 +85,7 @@ func NewSimulatedGameRoomsAndCorridors() *game.Game {
 	ecs.AddResource(w, resources.PreRun)
 
 	playerX, playerY := m.Rooms[0].Center()
-	ecs.AddEntity(
+	playerEnt := ecs.AddEntity(
 		w,
 		components.Player{},
 		components.Position{X: playerX, Y: playerY},
@@ -103,6 +103,7 @@ func NewSimulatedGameRoomsAndCorridors() *game.Game {
 			Power:   5,
 		},
 	)
+	ecs.AddResource(w, resources.PlayerEntity(playerEnt))
 
 	for i := 1; i < len(m.Rooms); i++ {
 		x, y := m.Rooms[i].Center()

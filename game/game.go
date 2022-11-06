@@ -63,7 +63,7 @@ func NewGame() *Game {
 	ecs.AddResource(w, resources.PreRun)
 
 	playerX, playerY := m.Rooms[0].Center()
-	ecs.AddEntity(
+	playerEnt := ecs.AddEntity(
 		w,
 		components.Player{},
 		components.Position{X: playerX, Y: playerY},
@@ -81,6 +81,7 @@ func NewGame() *Game {
 			Power:   5,
 		},
 	)
+	ecs.AddResource(w, resources.PlayerEntity(playerEnt))
 
 	for i := 1; i < len(m.Rooms); i++ {
 		x, y := m.Rooms[i].Center()
@@ -150,7 +151,6 @@ func (g *Game) RunN(n int) {
 
 	for i := 0; i < n; i++ {
 		ecs.RunSystems(g.ECS)
-		g.Renderer.Clear()
 		g.Renderer.Show()
 	}
 }

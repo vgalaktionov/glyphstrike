@@ -6,4 +6,5 @@ const (
 	mapID ecs.RID = iota
 	rendererID
 	runStateID
+	playerID
 )

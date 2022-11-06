@@ -1,8 +1,6 @@
 package systems
 
 import (
-	"log"
-
 	"github.com/vgalaktionov/roguelike-go/ecs"
 	. "github.com/vgalaktionov/roguelike-go/game/components"
 	"github.com/vgalaktionov/roguelike-go/game/resources"
@@ -12,11 +10,7 @@ import (
 func Render(w *ecs.World) {
 	r := ecs.GetResource[resources.Renderer](w)
 
-	playerEnt, err := ecs.QueryEntitiesSingle(w, Player{})
-	// If we don't have a player entity, we should bail out (until death is implemented)
-	if err != nil {
-		log.Fatalln("no player found")
-	}
+	playerEnt := ecs.GetResource[resources.PlayerEntity](w).Entity()
 	playerViewshed := ecs.MustGetEntityComponent[Viewshed](w, playerEnt)
 
 	for _, e := range ecs.QueryEntitiesIter(w, Renderable{}, Position{}) {
