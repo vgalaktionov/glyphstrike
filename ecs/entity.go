@@ -2,76 +2,90 @@ package ecs
 
 import (
 	"fmt"
+	"math"
+	"unsafe"
+
+	"github.com/bits-and-blooms/bitset"
 )
 
 // Entity is an ID that can be used to retrieve associated components.
-type Entity int
+type Entity uint
+
+// An entity has not been found. (if we run out of uints we have bigger challenges than this bug)
+const MissingEntity = Entity(math.MaxUint)
 
 // AddEntity adds a new entity to the world with any number of attached components, and returns the ID.
 func AddEntity(w *World, components ...Component) Entity {
-	w.lastEntityID++
-	w.entities[w.lastEntityID] = struct{}{}
+	eid := w.lastEntityID
+	w.entities = append(w.entities, eid)
 	for _, c := range components {
-		SetEntityComponent(w, c, w.lastEntityID)
+		if diff := int(c.CID()) - len(w.components) + 1; diff >= 0 {
+			w.components = append(w.components, make([][]Component, diff)...)
+			w.componentIndices = append(w.componentIndices, make([]*bitset.BitSet, diff)...)
+		}
+		SetEntityComponent(w, c, eid)
 	}
-	return w.lastEntityID
+	w.lastEntityID++
+	return eid
 }
 
 // HasEntity checks if a given entity exists (mostly useful for testing)
 func HasEntity(w *World, e Entity) bool {
-	_, ok := w.entities[e]
-	return ok
+	if len(w.entities) <= int(e) {
+		return false
+	}
+	return w.entities[e] != MissingEntity
 }
 
 // RemoveEntity removes an entity and all associated components by ID.
-func RemoveEntity(w *World, ent Entity) {
-	delete(w.entities, ent)
-	for _, components := range w.components {
-		delete(components, ent)
+func RemoveEntity(w *World, e Entity) {
+	if len(w.entities) >= int(e)+1 {
+		w.entities[e] = MissingEntity
+	}
+	for cid := range w.components {
+		if len(w.components[cid]) >= int(e)+1 {
+			w.components[cid][e] = nil
+		}
+		w.componentIndices[cid].Clear(uint(e))
 	}
 }
-
-// EntityNotFound is a sentinel value for missing entities.
-const EntityNotFound = Entity(-1)
 
 // QueryEntitiesSingle takes templates (empty components) and returns the first entity with these components, or error.
 func QueryEntitiesSingle(w *World, templates ...Component) (Entity, error) {
-
-	for e := range w.entities {
-		hasAll := true
-	inner:
-		for _, t := range templates {
-			_, hasAll = w.components[t.CTag()][e]
-			if !hasAll {
-				break inner
-			}
-		}
-		if hasAll {
-			return e, nil
+	if len(templates) == 0 {
+		if len(w.entities) > 0 {
+			return w.entities[0], nil
+		} else {
+			return MissingEntity, fmt.Errorf("no entities have been added to the world")
 		}
 	}
-	return EntityNotFound, fmt.Errorf("did not find an entity with components +%v", templates)
+	filter := w.componentIndices[templates[0].CID()]
+	for _, t := range templates[1:] {
+		if int(t.CID())+1 > len(w.componentIndices) {
+			return MissingEntity, fmt.Errorf("no component %d has been added to the world", t.CID())
+		}
+		filter = filter.Intersection(w.componentIndices[t.CID()])
+	}
+	next, ok := filter.NextSet(0)
+	if !ok {
+		return MissingEntity, fmt.Errorf("did not find an entity with components +%v", templates)
+	}
+	return Entity(next), nil
+
 }
 
-// QueryEntitiesIter takes templates (empty components) and returns an iterable channel of entities with these components.
-func QueryEntitiesIter(w *World, templates ...Component) chan Entity {
-	ch := make(chan Entity, len(w.entities))
-	go func() {
-		defer close(ch)
+// QueryEntitiesIter takes templates (empty components) and returns a slice of entities with these components.
+func QueryEntitiesIter(w *World, templates ...Component) []Entity {
+	if len(templates) == 0 {
+		return w.entities
+	}
 
-		for e := range w.entities {
-			hasAll := true
-		inner:
-			for _, t := range templates {
-				_, hasAll = w.components[t.CTag()][e]
-				if !hasAll {
-					break inner
-				}
-			}
-			if hasAll {
-				ch <- e
-			}
-		}
-	}()
-	return ch
+	filter := w.componentIndices[templates[0].CID()]
+	for _, t := range templates[1:] {
+		filter = filter.Intersection(w.componentIndices[t.CID()])
+	}
+	indices := make([]uint, filter.Count())
+	filter.NextSetMany(0, indices)
+	// it's already a slice of uints, let's not unnecessarily loop
+	return *(*[]Entity)(unsafe.Pointer(&indices))
 }

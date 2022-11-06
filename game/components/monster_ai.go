@@ -7,6 +7,6 @@ import (
 // MonsterAI marks a NPC monster with behavior.
 type MonsterAI struct{}
 
-func (MonsterAI) CTag() ecs.CTag {
-	return ecs.CTag("MonsterAI")
+func (MonsterAI) CTag() ecs.CID {
+	return ecs.CID("MonsterAI")
 }

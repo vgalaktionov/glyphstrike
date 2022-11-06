@@ -9,8 +9,8 @@ type SufferDamage struct {
 	Damage []int
 }
 
-func (SufferDamage) CTag() ecs.CTag {
-	return ecs.CTag("SufferDamage")
+func (SufferDamage) CTag() ecs.CID {
+	return ecs.CID("SufferDamage")
 }
 
 func NewDamage(w *ecs.World, dmg int, e ecs.Entity) {

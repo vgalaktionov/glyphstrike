@@ -6,13 +6,13 @@
 
 ## Development
 
- Running in development with the default console renderer:
+Running in development with the default console renderer:
 
 ```bash
 go run main.go
 ```
 
- Running in development with the WASM canvas renderer, serving on localhost:1334 :
+Running in development with the WASM canvas renderer, serving on localhost:1334 :
 
 ```bash
 go run cmd/serve.go
@@ -28,7 +28,7 @@ Running benchmarks
 
 ```bash
 # Run all benchmarks
-go test ./... -bench=. -benchmem
+go test ./... -bench=. -benchmem -timeout 2m
 
 # Run whole game benchmarks with profiling
 go test ./game -bench=. -benchmem -memprofile memprofile.out -cpuprofile profile.out

@@ -1,5 +1,9 @@
 package ecs
 
+import (
+	"github.com/bits-and-blooms/bitset"
+)
+
 // World encapsulates the internal datastructures of the ECS.
 // World does not have methods, instead it is operated on by functions from the `ecs` package.
 //
@@ -8,25 +12,37 @@ package ecs
 // we are not allowed to introduce generic parameters in methods without making the struct and ALL references to
 // the type require type params. Skipping methods and using functions instead allows us to sidestep this issue.
 type World struct {
-	lastEntityID Entity
-	entities     map[Entity]struct{}
-	components   map[CTag]map[Entity]Component
-	systems      []System
-	resources    map[RTag]Resource
-	events       map[ETag]chan Event
-	eventSystems []System
+	lastEntityID     Entity
+	entities         []Entity
+	componentIndices []*bitset.BitSet
+	components       [][]Component
+	systems          []System
+	resources        map[RTag]Resource
+	events           map[ETag]chan Event
+	eventSystems     []System
 }
+
+// avoid runtime reallocations for a reasonably sized game, can be tweaked later
+const PreAllocateEntities = 100_000
+const PreAllocateComponents = 100
 
 // NewWorld returns an empty, usable world.
 func NewWorld() *World {
 	w := &World{
 		0,
-		make(map[Entity]struct{}),
-		make(map[CTag]map[Entity]Component),
+		make([]Entity, 0, PreAllocateEntities),
+		make([]*bitset.BitSet, PreAllocateComponents),
+		make([][]Component, PreAllocateComponents),
 		nil,
 		make(map[RTag]Resource),
 		make(map[ETag]chan Event),
 		nil,
+	}
+	for i := 0; i < len(w.componentIndices); i++ {
+		w.componentIndices[i] = bitset.New(PreAllocateEntities)
+	}
+	for i := 0; i < len(w.components); i++ {
+		w.components[i] = make([]Component, PreAllocateEntities)
 	}
 	return w
 }

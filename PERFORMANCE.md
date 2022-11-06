@@ -162,3 +162,33 @@ Removing also much slower than we'd like it to be.
 
 Querying however, which nearly every system does, is the real killer. Even a single component is not better,
 as it needs to do almost the same amount of work in the worst case.
+
+### After replacing the maps with slices + bitsets for querying:
+
+```
+BenchmarkMustGetEntityComponent
+BenchmarkMustGetEntityComponent-3       449636858                2.760 ns/op           0 B/op          0 allocs/op
+BenchmarkGetEntityComponent
+BenchmarkGetEntityComponent-3           209203453                5.520 ns/op           0 B/op          0 allocs/op
+BenchmarkSetEntityComponent
+BenchmarkSetEntityComponent-3           50575398                23.66 ns/op            0 B/op          0 allocs/op
+BenchmarkRemoveEntityComponent
+BenchmarkRemoveEntityComponent-3        201453700                6.048 ns/op           0 B/op          0 allocs/op
+BenchmarkAddEntity
+BenchmarkAddEntity-3                    45559728                24.53 ns/op           45 B/op          0 allocs/op
+BenchmarkHasEntity
+BenchmarkHasEntity-3                    1000000000               1.014 ns/op           0 B/op          0 allocs/op
+BenchmarkAddEntityComponent
+BenchmarkAddEntityComponent-3            5057528               221.5 ns/op           233 B/op          0 allocs/op
+BenchmarkHasEntityComponent
+BenchmarkHasEntityComponent-3           295670764                4.165 ns/op           0 B/op          0 allocs/op
+BenchmarkRemoveEntity
+BenchmarkRemoveEntity-3                  3058321               347.0 ns/op             0 B/op          0 allocs/op
+BenchmarkQueryEntitiesIter
+BenchmarkQueryEntitiesIter-3                 757           1924979 ns/op         4136992 B/op          3 allocs/op
+BenchmarkQueryEntitiesSingle
+BenchmarkQueryEntitiesSingle-3            249214              4744 ns/op            6868 B/op          3 allocs/op
+```
+
+Definitely not bad, querying has become 2 orders of magnitude faster. Let's see if we can get a bit more out
+by being smarter while adding entities, and a more optimized bitset package for our data sizes.
