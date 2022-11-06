@@ -21,7 +21,12 @@ func TestAddEntity(t *testing.T) {
 }
 
 func BenchmarkAddEntity(b *testing.B) {
+	b.StopTimer()
 	w := ecs.NewWorld()
+	for i := 0; i < 1_000_000; i++ {
+		ecs.AddEntity(w, testComp1{}, testComp2{})
+	}
+	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		ecs.AddEntity(w)
 	}
@@ -44,7 +49,7 @@ func TestHasEntity(t *testing.T) {
 func BenchmarkHasEntity(b *testing.B) {
 	b.StopTimer()
 	w := ecs.NewWorld()
-	for i := 0; i < b.N; i++ {
+	for i := 0; i < 1_000_000; i++ {
 		if i%2 == 1 {
 			ecs.AddEntity(w)
 		}
@@ -52,7 +57,7 @@ func BenchmarkHasEntity(b *testing.B) {
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 
-		ecs.HasEntity(w, ecs.Entity(i))
+		ecs.HasEntity(w, ecs.Entity(i%1_000_000))
 	}
 }
 
@@ -80,7 +85,12 @@ func TestAddEntityComponent(t *testing.T) {
 }
 
 func BenchmarkAddEntityComponent(b *testing.B) {
+	b.StopTimer()
 	w := ecs.NewWorld()
+	for i := 0; i < 1_000_000; i++ {
+		ecs.AddEntity(w, testComp1{}, testComp2{})
+	}
+	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		ecs.AddEntity(w, testComp1{}, testComp2{})
 	}
@@ -89,7 +99,7 @@ func BenchmarkAddEntityComponent(b *testing.B) {
 func BenchmarkHasEntityComponent(b *testing.B) {
 	b.StopTimer()
 	w := ecs.NewWorld()
-	for i := 0; i < b.N; i++ {
+	for i := 0; i < 1_000_000; i++ {
 		if i%2 == 1 {
 			ecs.AddEntity(w)
 		} else {
@@ -98,7 +108,7 @@ func BenchmarkHasEntityComponent(b *testing.B) {
 	}
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
-		ecs.HasEntityComponent[testComp1](w, ecs.Entity(i))
+		ecs.HasEntityComponent[testComp1](w, ecs.Entity(i%1_000_000))
 	}
 }
 
@@ -117,12 +127,12 @@ func TestRemoveEntity(t *testing.T) {
 func BenchmarkRemoveEntity(b *testing.B) {
 	b.StopTimer()
 	w := ecs.NewWorld()
-	for i := 0; i < b.N; i++ {
+	for i := 0; i < 1_000_000; i++ {
 		ecs.AddEntity(w, testComp1{}, testComp2{})
 	}
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
-		ecs.RemoveEntity(w, ecs.Entity(i))
+		ecs.RemoveEntity(w, ecs.Entity(i%1_000_000))
 	}
 }
 
@@ -144,13 +154,10 @@ func TestQueryEntitiesIter(t *testing.T) {
 	assert.Equal(t, results, []int{1, 5}, "should query multiple entities correctly")
 }
 
-// noop is used to test iteration
-func noop(ent ecs.Entity) {}
-
 func BenchmarkQueryEntitiesIter(b *testing.B) {
 	b.StopTimer()
 	w := ecs.NewWorld()
-	for i := 0; i < b.N; i++ {
+	for i := 0; i < 1_000_000; i++ {
 		if i%2 == 1 {
 			ecs.AddEntity(w, testComp1{}, testComp2{})
 		} else {
@@ -159,8 +166,8 @@ func BenchmarkQueryEntitiesIter(b *testing.B) {
 	}
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
-		for e := range ecs.QueryEntitiesIter(w, testComp1{}, testComp2{}) {
-			noop(e)
+		for range ecs.QueryEntitiesIter(w, testComp1{}, testComp2{}) {
+			continue
 		}
 	}
 }
@@ -182,7 +189,7 @@ func TestQueryEntitiesSingle(t *testing.T) {
 func BenchmarkQueryEntitiesSingle(b *testing.B) {
 	b.StopTimer()
 	w := ecs.NewWorld()
-	for i := 0; i < b.N; i++ {
+	for i := 0; i < 1_000_000; i++ {
 		ecs.AddEntity(w, testComp1{})
 	}
 	b.StartTimer()

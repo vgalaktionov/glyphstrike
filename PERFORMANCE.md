@@ -127,65 +127,38 @@ Furthermore, we also access the component maps for the purpose of querying - but
 The one downside is requiring a tiny bit more boilerplate, as we need global static sequential unique integers for component ids this way. I thought about code generation with `// go:generate` but it's not worth it at this stage.
 This is Go after all, typing things is part of the fun.
 
-#### Adding entities:
+## Optimizing the ECS
 
-Oof, that's pretty slow off the bat:
+First, let's benchmark the current most common operations. We'll fill it out as we go along.
+All benchmarks use a world seeded with 1_000_000 initial entities.
 
 ```
 BenchmarkAddEntity
-BenchmarkAddEntity-3     3967592               278.8 ns/op
-```
-
-#### Checking single entity exists
-
-Slightly better but still not optimal (we test with a lot of entities):
-
-```
+BenchmarkAddEntity-3                     4417538               271.4 ns/op
 BenchmarkHasEntity
-BenchmarkHasEntity-3    15449060                95.87 ns/op
-```
-
-#### Adding entity with components
-
-Two empty components makes it even slower:
-
-```
+BenchmarkHasEntity-3                    16264411                70.18 ns/op
 BenchmarkAddEntityComponent
-BenchmarkAddEntityComponent-3            1000000              1481 ns/op
-```
-
-#### Checking entity has component
-
-Not as bad as expected given the multiple map accesses, but still painful
-
-```
+BenchmarkAddEntityComponent-3            1000000              1279 ns/op
 BenchmarkHasEntityComponent
-BenchmarkHasEntityComponent-3           10271796               146.6 ns/op
-```
-
-#### Removing entities
-
-Also much slower than we'd like it to be.
-
-```
+BenchmarkHasEntityComponent-3           10290847               106.0 ns/op
 BenchmarkRemoveEntity
-BenchmarkRemoveEntity-3                  2190624               593.5 ns/op
-```
-
-#### Querying multiple entities for components
-
-Here is the real killer.
-
-```
+BenchmarkRemoveEntity-3                  1965645               647.3 ns/op
 BenchmarkQueryEntitiesIter
-BenchmarkQueryEntitiesIter-3               10000           1449094 ns/op
-```
-
-#### Querying the first entity for components
-
-Also this is not great, because in the worst case it does almost the same amount of work:
-
-```
+BenchmarkQueryEntitiesIter-3                   3         424827922 ns/op
 BenchmarkQueryEntitiesSingle
-BenchmarkQueryEntitiesSingle-3             10000            302499 ns/op
+BenchmarkQueryEntitiesSingle-3                 8         140165732 ns/op
 ```
+
+Adding bare entities is pretty slow off the bat, for something we may need to do hundreds of times per turn.
+However, that's not even a realistic usecase: we will usually add an entity together with its components.
+
+Two empty components makes it even slower, this will not scale well.
+
+Checking for entity existence is slightly better but still not optimal.
+
+Checking for component presence is not as bad as expected, unlikely we can do much better here.
+
+Removing also much slower than we'd like it to be.
+
+Querying however, which nearly every system does, is the real killer. Even a single component is not better,
+as it needs to do almost the same amount of work in the worst case.
