@@ -22,9 +22,7 @@ type World struct {
 	eventSystems     []System
 }
 
-// avoid runtime reallocations for a reasonably sized game, can be tweaked later
-const PreAllocateEntities = 100_000
-const PreAllocateComponents = 100
+
 
 // NewWorld returns an empty, usable world.
 func NewWorld() *World {

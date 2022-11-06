@@ -8,6 +8,8 @@ import (
 	"github.com/vgalaktionov/roguelike-go/ecs"
 )
 
+const benchWorldSize = 100_000
+
 func TestAddEntity(t *testing.T) {
 	w := ecs.NewWorld()
 
@@ -22,7 +24,7 @@ func TestAddEntity(t *testing.T) {
 
 func BenchmarkAddEntity(b *testing.B) {
 	w := ecs.NewWorld()
-	for i := 0; i < 1_000_000; i++ {
+	for i := 0; i < benchWorldSize; i++ {
 		ecs.AddEntity(w, testComp1{}, testComp2{})
 	}
 	b.ResetTimer()
@@ -47,7 +49,7 @@ func TestHasEntity(t *testing.T) {
 
 func BenchmarkHasEntity(b *testing.B) {
 	w := ecs.NewWorld()
-	for i := 0; i < 1_000_000; i++ {
+	for i := 0; i < benchWorldSize; i++ {
 		if i%2 == 1 {
 			ecs.AddEntity(w)
 		}
@@ -55,7 +57,7 @@ func BenchmarkHasEntity(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 
-		ecs.HasEntity(w, ecs.Entity(i%1_000_000))
+		ecs.HasEntity(w, ecs.Entity(i%benchWorldSize))
 	}
 }
 
@@ -86,7 +88,7 @@ func TestAddEntityComponent(t *testing.T) {
 
 func BenchmarkAddEntityComponent(b *testing.B) {
 	w := ecs.NewWorld()
-	for i := 0; i < 1_000_000; i++ {
+	for i := 0; i < benchWorldSize; i++ {
 		ecs.AddEntity(w, testComp1{}, testComp2{})
 	}
 	b.ResetTimer()
@@ -97,7 +99,7 @@ func BenchmarkAddEntityComponent(b *testing.B) {
 
 func BenchmarkHasEntityComponent(b *testing.B) {
 	w := ecs.NewWorld()
-	for i := 0; i < 1_000_000; i++ {
+	for i := 0; i < benchWorldSize; i++ {
 		if i%2 == 1 {
 			ecs.AddEntity(w)
 		} else {
@@ -106,7 +108,7 @@ func BenchmarkHasEntityComponent(b *testing.B) {
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		ecs.HasEntityComponent[testComp1](w, ecs.Entity(i%1_000_000))
+		ecs.HasEntityComponent[testComp1](w, ecs.Entity(i%benchWorldSize))
 	}
 }
 
@@ -124,12 +126,12 @@ func TestRemoveEntity(t *testing.T) {
 
 func BenchmarkRemoveEntity(b *testing.B) {
 	w := ecs.NewWorld()
-	for i := 0; i < 1_000_000; i++ {
+	for i := 0; i < benchWorldSize; i++ {
 		ecs.AddEntity(w, testComp1{}, testComp2{})
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		ecs.RemoveEntity(w, ecs.Entity(i%1_000_000))
+		ecs.RemoveEntity(w, ecs.Entity(i%benchWorldSize))
 	}
 }
 
@@ -153,7 +155,7 @@ func TestQueryEntitiesIter(t *testing.T) {
 
 func BenchmarkQueryEntitiesIter(b *testing.B) {
 	w := ecs.NewWorld()
-	for i := 0; i < 1_000_000; i++ {
+	for i := 0; i < benchWorldSize; i++ {
 		if i%2 == 1 {
 			ecs.AddEntity(w, testComp1{}, testComp2{})
 		} else {
@@ -184,7 +186,7 @@ func TestQueryEntitiesSingle(t *testing.T) {
 
 func BenchmarkQueryEntitiesSingle(b *testing.B) {
 	w := ecs.NewWorld()
-	for i := 0; i < 1_000_000; i++ {
+	for i := 0; i < benchWorldSize; i++ {
 		ecs.AddEntity(w, testComp1{})
 	}
 	b.ResetTimer()
