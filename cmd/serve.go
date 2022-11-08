@@ -87,7 +87,7 @@ func serve() {
 			io.Copy(w, file)
 		}
 	})
-	log.Println("Serving on port 1334...")
+	log.Println("serving on port 1334...")
 	log.Println(http.ListenAndServe(":1334", nil))
 }
 

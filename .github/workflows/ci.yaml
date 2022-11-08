@@ -22,8 +22,19 @@ jobs:
       - name: Benchmark All
         run: go test ./... -bench=. -benchmem -timeout 5m
 
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install esbuild
+        run: npm i -g esbuild
+
       - name: Build WASM
         run: GOOS=js GOARCH=wasm go build -o assets/main.wasm main_js.go
+
+      - name: Build JS
+        run: esbuild draw/renderer.ts --bundle --outfile=assets/renderer.js
 
       - name: Setup Pages
         uses: actions/configure-pages@v1

@@ -6,6 +6,12 @@
 
 ## Development
 
+### Requirements:
+
+Go 1.19 or newer, NodeJS 18 or newer.
+
+### Useful commands:
+
 Running in development with the default console renderer:
 
 ```bash
@@ -65,4 +71,5 @@ Building for Web
 
 ```bash
 GOOS=js GOARCH=wasm go build -o assets/main.wasm main_js.go
+esbuild draw/renderer.ts --bundle --outfile=assets/renderer.js
 ```
