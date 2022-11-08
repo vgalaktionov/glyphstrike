@@ -23,7 +23,7 @@ class CanvasRenderer {
       ctx.fillStyle = this.backgroundColor;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.font =
-        '13px/1.0 ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro","Fira Mono", "Droid Sans Mono", "Courier New", monospace';
+        '13px/1 ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro","Fira Mono", "Droid Sans Mono", "Courier New", monospace';
     }
 
     document.body.style.backgroundColor = backgroundColor;
@@ -81,9 +81,7 @@ class CanvasRenderer {
       width: Math.floor(window.innerWidth / measure.width),
       height: Math.floor(
         window.innerHeight /
-          (measure.actualBoundingBoxAscent +
-            measure.actualBoundingBoxDescent -
-            2)
+          (measure.actualBoundingBoxAscent + measure.actualBoundingBoxDescent)
       ),
     };
   }
@@ -93,7 +91,7 @@ class CanvasRenderer {
     return {
       width: measure.width,
       height:
-        measure.actualBoundingBoxAscent + measure.actualBoundingBoxDescent - 2,
+        measure.actualBoundingBoxAscent + measure.actualBoundingBoxDescent,
     };
   }
 
@@ -116,13 +114,19 @@ class CanvasRenderer {
       // draw slightly more to hide ugly gaps
       ctx.fillRect(
         xOffset,
-        yOffset - cellHeight + 3,
+        yOffset - cellHeight + 2,
         cellWidth,
-        cellHeight + 3
+        cellHeight - 1
+      );
+      ctx.strokeRect(
+        xOffset,
+        yOffset - cellHeight + 2,
+        cellWidth,
+        cellHeight - 1
       );
       ctx.fillStyle = fg;
       ctx.strokeStyle = fg;
-      ctx.fillText(char, xOffset, yOffset);
+      ctx.fillText(char, xOffset, yOffset - 2);
 
       yOffset += cellHeight;
       if (yOffset + cellHeight >= this.canvas.height) {
