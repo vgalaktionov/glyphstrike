@@ -27,8 +27,8 @@ jobs:
         with:
           tinygo-version: 0.25.0
 
-      - name: Copy TinyGo wasm_exec.js
-        run: cp /opt/hostedtoolcache/tinygo/0.25.0/amd64/tinygo/targets/wasm_exec.js ./assets/
+      - name: Copy Go wasm_exec.js
+        run: cp $(go env GOROOT)/misc/wasm/wasm_exec.js ./assets/
 
       - name: Set up Node
         uses: actions/setup-node@v3
@@ -43,6 +43,9 @@ jobs:
 
       - name: Build JS
         run: esbuild draw/renderer.ts --bundle --outfile=assets/renderer.js
+
+      - name: Build Linux
+        run: GOOS=linux GOARCH=amd64 go build -o assets/bin/glyphstrike-amd64-linux main.go
 
       - name: Setup Pages
         uses: actions/configure-pages@v1

@@ -4,6 +4,12 @@
 
 ![CI/CD](https://github.com/vgalaktionov/glyphstrike/actions/workflows/ci.yaml/badge.svg)
 
+## Playing
+
+WASM version of the latest succesful build is running [here](https://vgalaktionov.github.io/glyphstrike).
+
+Linux binaries: [x64](https://vgalaktionov.github.io/glyphstrike/bin/glyphstrike-amd64-linux)
+
 ## Development
 
 ### Requirements:
@@ -70,6 +76,11 @@ GOOS=windows GOARCH=amd64 go build -o bin/glyphstrike-amd64.exe main.go
 Building for Web
 
 ```bash
+# With native go compiler
 GOOS=js GOARCH=wasm go build -o assets/main.wasm main_js.go
+# With TinyGO
+tinygo build -o assets/main.wasm -target wasm main_js.
+
+# JS-side assets
 esbuild draw/renderer.ts --bundle --outfile=assets/renderer.js
 ```
