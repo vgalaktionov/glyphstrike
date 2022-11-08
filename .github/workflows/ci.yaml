@@ -27,8 +27,8 @@ jobs:
         with:
           tinygo-version: 0.25.0
 
-      - name: Locate Tinygo
-        run: ll $(which tinygo)
+      - name: Copy TinyGo wasm_exec.js
+        run: cp /opt/hostedtoolcache/tinygo/0.25.0/amd64/tinygo/targets/wasm_exec.js ./assets/
 
       - name: Set up Node
         uses: actions/setup-node@v3
