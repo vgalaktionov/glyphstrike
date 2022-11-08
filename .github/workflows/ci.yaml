@@ -13,6 +13,19 @@ jobs:
         with:
           go-version: 1.19
 
+      - name: Setup TinyGo
+        uses: acifani/setup-tinygo@v1
+        with:
+          tinygo-version: 0.26.0
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install esbuild
+        run: npm i -g esbuild
+
   test:
     runs-on: ubuntu-latest
     needs: [setup]
@@ -31,19 +44,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [test]
     steps:
-      - name: Setup TinyGo
-        uses: acifani/setup-tinygo@v1
-        with:
-          tinygo-version: 0.26.0
-
-      - name: Set up Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-
-      - name: Install esbuild
-        run: npm i -g esbuild
-
       - name: Build WASM
         run: tinygo build -o assets/main.wasm -target wasm main_js.go
 
@@ -52,6 +52,15 @@ jobs:
 
       - name: Build Linux
         run: GOOS=linux GOARCH=amd64 go build -o assets/bin/glyphstrike-amd64-linux main.go
+
+      - name: Build Apple Silicon Mac
+        run: GOOS=darwin GOARCH=arm64 go build -o assets/bin/glyphstrike-arm64-darwin main.go
+
+      - name: Build x64 Mac
+        run: GOOS=darwin GOARCH=amd64 go build -o assets/bin/glyphstrike-amd64-darwin main.go
+
+      - name: Build Windows
+        run: GOOS=windows GOARCH=amd64 go build -o assets/bin/glyphstrike-amd64.exe main.go
 
       - name: Setup Pages
         uses: actions/configure-pages@v1
@@ -63,7 +72,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    needs: build
+    needs: [build]
 
     permissions:
       pages: write
