@@ -4,5 +4,5 @@
 *.out
 *.test
 # build output
-assets/*.wasm
-assets/*.js
+assets/main.wasm
+assets/renderer.js

@@ -4,7 +4,6 @@
 package main
 
 import (
-	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -18,34 +17,6 @@ import (
 	esbuild "github.com/evanw/esbuild/pkg/api"
 	"github.com/radovskyb/watcher"
 )
-
-func init() {
-	goRoot, err := exec.Command("go", "env", "GOROOT").Output()
-	if err != nil {
-		log.Fatalln("failed getting goroot: ", err.Error())
-	}
-	wasmExecPath := fmt.Sprint(strings.TrimSpace(string(goRoot)), "/misc/wasm/wasm_exec.js")
-
-	source, err := os.Open(wasmExecPath)
-	if err != nil {
-		log.Fatalln("failed to open wasm_exec.js source", err)
-	}
-	defer source.Close()
-
-	destination, err := os.Create("./assets/wasm_exec.js")
-	if err != nil {
-		log.Fatalln("failed to open wasm_exec.js destination", err)
-	}
-	defer destination.Close()
-
-	_, err = io.Copy(destination, source)
-
-	if err != nil {
-		log.Fatalln("failed copying file: ", err)
-	} else {
-		log.Println("copied wasm_exec.js from current GOROOT")
-	}
-}
 
 func buildGo() {
 	os.Setenv("GOOS", "js")

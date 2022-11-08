@@ -3,7 +3,7 @@ name: CI/CD
 on: [push]
 
 jobs:
-  build:
+  setup:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -13,22 +13,28 @@ jobs:
         with:
           go-version: 1.19
 
-      - name: Build
-        run: go build -v ./...
-
+  test:
+    runs-on: ubuntu-latest
+    needs: [setup]
+    steps:
       - name: Test All
         run: go test -v ./...
 
+  benchmark:
+    runs-on: ubuntu-latest
+    needs: [setup]
+    steps:
       - name: Benchmark All
         run: go test ./... -bench=. -benchmem -timeout 5m
 
+  build:
+    runs-on: ubuntu-latest
+    needs: [test]
+    steps:
       - name: Setup TinyGo
         uses: acifani/setup-tinygo@v1
         with:
-          tinygo-version: 0.25.0
-
-      - name: Copy Go wasm_exec.js
-        run: cp $(go env GOROOT)/misc/wasm/wasm_exec.js ./assets/
+          tinygo-version: 0.26.0
 
       - name: Set up Node
         uses: actions/setup-node@v3
@@ -56,16 +62,13 @@ jobs:
           path: "./assets"
 
   deploy:
-    # Add a dependency to the build job
     runs-on: ubuntu-latest
     needs: build
 
-    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
     permissions:
-      pages: write # to deploy to Pages
-      id-token: write # to verify the deployment originates from an appropriate source
+      pages: write
+      id-token: write
 
-    # Deploy to the github-pages environment
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
