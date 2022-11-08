@@ -30,6 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [setup]
     steps:
+      - uses: actions/checkout@v3
       - name: Test All
         run: go test -v ./...
 
@@ -37,6 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [setup]
     steps:
+      - uses: actions/checkout@v3
       - name: Benchmark All
         run: go test ./... -bench=. -benchmem -timeout 5m
 
@@ -44,6 +46,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [test]
     steps:
+      - uses: actions/checkout@v3
       - name: Build WASM
         run: tinygo build -o assets/main.wasm -target wasm main_js.go
 
