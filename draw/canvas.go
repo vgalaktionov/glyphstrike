@@ -115,21 +115,22 @@ func (cr *CanvasRenderer) SetCellContent(x int, y int, primary rune, foreground,
 func (cr *CanvasRenderer) Show() {
 	cr.Bytes.Reset()
 
-	for _, column := range cr.Buffer {
-		for _, cell := range column {
-			char := []byte(string(cell.Char))
-			for padding := 4 - len(char); padding > 0; padding-- {
-				char = append([]byte(" "), char...)
+	go func() {
+		for _, column := range cr.Buffer {
+			for _, cell := range column {
+				for padding := 4 - len([]byte(string(cell.Char))); padding > 0; padding-- {
+					cr.Bytes.WriteRune(' ')
+				}
+				cr.Bytes.WriteRune(cell.Char)
+				cr.Bytes.WriteString(palette[cell.Foreground])
+				cr.Bytes.WriteString(palette[cell.Background])
 			}
-			cr.Bytes.Write(char)
-			cr.Bytes.WriteString(palette[cell.Foreground])
-			cr.Bytes.WriteString(palette[cell.Background])
 		}
-	}
-	jsBuffer := js.Global().Get("Uint8Array").New(cr.Width * cr.Height * LineLength)
-	js.CopyBytesToJS(jsBuffer, cr.Bytes.Bytes())
+		jsBuffer := js.Global().Get("Uint8Array").New(cr.Width * cr.Height * LineLength)
+		js.CopyBytesToJS(jsBuffer, cr.Bytes.Bytes())
 
-	cr.Renderer.Call("show", jsBuffer)
+		cr.Renderer.Call("show", jsBuffer)
+	}()
 }
 
 func (cr *CanvasRenderer) Size() (int, int) {

@@ -22,6 +22,14 @@ jobs:
       - name: Benchmark All
         run: go test ./... -bench=. -benchmem -timeout 5m
 
+      - name: Setup TinyGo
+        uses: acifani/setup-tinygo@v1
+        with:
+          tinygo-version: 0.25.0
+
+      - name: Locate Tinygo
+        run: ll $(which tinygo)
+
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
@@ -31,7 +39,7 @@ jobs:
         run: npm i -g esbuild
 
       - name: Build WASM
-        run: GOOS=js GOARCH=wasm go build -o assets/main.wasm main_js.go
+        run: tinygo build -o assets/main.wasm -target wasm main_js.go
 
       - name: Build JS
         run: esbuild draw/renderer.ts --bundle --outfile=assets/renderer.js
