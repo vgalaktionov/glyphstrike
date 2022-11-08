@@ -13,7 +13,7 @@ import (
 func RandomPlayer(w *ecs.World) {
 	r := ecs.GetResource[resources.Renderer](w)
 	state := ecs.GetResource[resources.GameState](w)
-	if state != resources.PlayerTurn {
+	if state != resources.AwaitingInput {
 		return
 	}
 	switch rand.Intn(4) {

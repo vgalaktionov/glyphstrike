@@ -1,52 +1,49 @@
 const LineLength = 4 + 6 + 6; // max 4 byte rune + 6 byte foreground hex + 6 byte background hex
 
 class CanvasRenderer {
-  #backgroundColor;
-  #canvas;
-  #decoder;
-  #offscreenCanvas;
-  constructor(backgroundColor) {
-    this.#canvas = document.getElementById("screen");
-    if (!this.#canvas instanceof HTMLCanvasElement)
+  private canvas: HTMLCanvasElement;
+  private decoder: TextDecoder;
+  private offscreenCanvas: HTMLCanvasElement;
+
+  constructor(private backgroundColor: string) {
+    const canvas = document.getElementById("screen");
+    if (canvas == null || !(canvas instanceof HTMLCanvasElement))
       throw new Error("invalid canvas");
-    this.#canvas.width = window.innerWidth;
-    this.#canvas.height = window.innerHeight;
-    this.#canvas.imageSmoothingEnabled = false;
+    this.canvas = canvas;
+    this.offscreenCanvas = document.createElement("canvas");
 
-    this.#offscreenCanvas = document.createElement("canvas");
-    this.#offscreenCanvas.width = window.innerWidth;
-    this.#offscreenCanvas.height = window.innerHeight;
-    this.#offscreenCanvas.imageSmoothingEnabled = false;
+    for (const canvas of [this.canvas, this.offscreenCanvas]) {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
 
-    this.#backgroundColor = backgroundColor;
+      const ctx = canvas.getContext("2d");
+      if (ctx == null) throw new Error("failed to get 2d rendering context");
+
+      ctx.imageSmoothingEnabled = false;
+      ctx.fillStyle = this.backgroundColor;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.font =
+        '13px/1.0 ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro","Fira Mono", "Droid Sans Mono", "Courier New", monospace';
+    }
+
     document.body.style.backgroundColor = backgroundColor;
-    this.#decoder = new TextDecoder();
 
-    const ctx = this.#canvas.getContext("2d");
-    ctx.fillStyle = this.#backgroundColor;
-    ctx.fillRect(0, 0, this.#canvas.width, this.#canvas.height);
-    ctx.font =
-      '13px/1.0 ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro","Fira Mono", "Droid Sans Mono", "Courier New", monospace';
-
-    const offscreen = this.#offscreenCanvas.getContext("2d");
-    offscreen.fillStyle = ctx.fillStyle;
-    offscreen.fillRect(0, 0, this.#canvas.width, this.#canvas.height);
-    offscreen.font = ctx.font;
+    this.decoder = new TextDecoder();
   }
 
   clear() {
-    const ctx = this.#canvas.getContext("2d");
-    ctx.fillStyle = this.#backgroundColor;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    const offscreen = this.#offscreenCanvas.getContext("2d");
-    offscreen.fillStyle = this.#backgroundColor;
-    offscreen.fillRect(0, 0, canvas.width, canvas.height);
+    for (const canvas of [this.canvas, this.offscreenCanvas]) {
+      const ctx = canvas.getContext("2d");
+      if (ctx == null) throw new Error("failed to get 2d rendering context");
+      ctx.fillStyle = this.backgroundColor;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
   }
 
   async pollEvent() {
     const { width, height } = this.cellSize();
     return new Promise((resolve, reject) => {
-      const listenEvent = (ev) => {
+      const listenEvent = (ev: Event) => {
         ev.preventDefault();
         if (ev instanceof KeyboardEvent) {
           resolve({ type: "key", key: ev.key });
@@ -68,18 +65,18 @@ class CanvasRenderer {
     });
   }
 
-  postKeyEvent(key) {
+  postKeyEvent(key: string) {
     window.dispatchEvent(new KeyboardEvent("keydown", { key }));
   }
 
-  postMouseEvent(x, y, button) {
+  postMouseEvent(x: number, y: number, button: number) {
     window.dispatchEvent(
       new MouseEvent("mousedown", { screenX: x, screenY: y, button })
     );
   }
 
   size() {
-    const measure = this.#canvas.getContext("2d").measureText("█");
+    const measure = this.canvas.getContext("2d")!.measureText("█");
     return {
       width: Math.floor(window.innerWidth / measure.width),
       height: Math.floor(
@@ -92,7 +89,7 @@ class CanvasRenderer {
   }
 
   cellSize() {
-    const measure = this.#canvas.getContext("2d").measureText("█");
+    const measure = this.canvas.getContext("2d")!.measureText("█");
     return {
       width: measure.width,
       height:
@@ -100,18 +97,20 @@ class CanvasRenderer {
     };
   }
 
-  show(buf) {
+  show(buf: Uint8Array) {
     let xOffset = 0;
     let yOffset = 0;
     const { width: cellWidth, height: cellHeight } = this.cellSize();
-    const ctx = this.#offscreenCanvas.getContext("2d", {
+
+    const ctx = this.offscreenCanvas.getContext("2d", {
       colorSpace: "display-p3",
-    });
+    })!;
+
     for (let i = 0; i < buf.length; i += LineLength) {
-      const char = this.#decoder.decode(buf.slice(i, i + 4)).trimStart();
-      const fg = "#" + this.#decoder.decode(buf.slice(i + 4, i + 4 + 6));
+      const char = this.decoder.decode(buf.slice(i, i + 4)).trimStart();
+      const fg = "#" + this.decoder.decode(buf.slice(i + 4, i + 4 + 6));
       const bg =
-        "#" + this.#decoder.decode(buf.slice(i + 4 + 6, i + LineLength));
+        "#" + this.decoder.decode(buf.slice(i + 4 + 6, i + LineLength));
       ctx.fillStyle = bg;
       ctx.strokeStyle = bg;
       // draw slightly more to hide ugly gaps
@@ -126,7 +125,7 @@ class CanvasRenderer {
       ctx.fillText(char, xOffset, yOffset);
 
       yOffset += cellHeight;
-      if (yOffset + cellHeight >= this.#canvas.height) {
+      if (yOffset + cellHeight >= this.canvas.height) {
         yOffset = 0;
         xOffset += cellWidth;
       }
@@ -134,19 +133,20 @@ class CanvasRenderer {
     const frame = ctx.getImageData(
       0,
       0,
-      this.#offscreenCanvas.width,
-      this.#offscreenCanvas.height
+      this.offscreenCanvas.width,
+      this.offscreenCanvas.height
     );
-    const screen = this.#canvas.getContext("2d");
+    const screen = this.canvas.getContext("2d", {
+      colorSpace: "display-p3",
+    })!;
     screen.putImageData(frame, 0, 0);
   }
 
   sync() {
-    this.#canvas.width = window.innerWidth;
-    this.#canvas.height = window.innerHeight;
-    this.#offscreenCanvas.width = this.#canvas.width;
-    this.#offscreenCanvas.height = this.#canvas.height;
-    this.show();
+    for (const canvas of [this.canvas, this.offscreenCanvas]) {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
   }
 }
 
