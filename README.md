@@ -78,11 +78,6 @@ GOOS=windows GOARCH=amd64 go build -o bin/glyphstrike-amd64.exe main.go
 Building for Web
 
 ```bash
-# With native go compiler
-GOOS=js GOARCH=wasm go build -o assets/main.wasm main_js.go
-# With TinyGO
-tinygo build -o assets/main.wasm -target wasm main_js.
-
-# JS-side assets
+GOOS=js GOARCH=wasm go build -o assets/main.wasm
 esbuild draw/renderer.ts --bundle --outfile=assets/renderer.js
 ```

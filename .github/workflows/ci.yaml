@@ -13,11 +13,6 @@ jobs:
         with:
           go-version: 1.19
 
-      - name: Setup TinyGo
-        uses: acifani/setup-tinygo@v1
-        with:
-          tinygo-version: 0.26.0
-
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
@@ -45,7 +40,7 @@ jobs:
     needs: [test]
     steps:
       - name: Build WASM
-        run: tinygo build -o assets/main.wasm -target wasm main_js.go
+        run: GOOS=js GOARCH=wasm go build -o assets/main.wasm
 
       - name: Build JS
         run: esbuild draw/renderer.ts --bundle --outfile=assets/renderer.js
