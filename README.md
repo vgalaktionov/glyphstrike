@@ -8,9 +8,15 @@
 
 WASM version of the latest succesful build is running [here](https://vgalaktionov.github.io/glyphstrike).
 
-Mac binaries: [Apple Silicon](https://vgalaktionov.github.io/glyphstrike/bin/glyphstrike-arm64-darwin)[x64](https://vgalaktionov.github.io/glyphstrike/bin/glyphstrike-amd64-darwin)
-Linux binaries: [x64](https://vgalaktionov.github.io/glyphstrike/bin/glyphstrike-amd64-linux)
-Windows binaries: [x64](https://vgalaktionov.github.io/glyphstrike/bin/glyphstrike-amd64.exe)
+Mac binaries: 
+[Apple Silicon](https://vgalaktionov.github.io/glyphstrike/bin/glyphstrike-arm64-darwin)  
+[x64](https://vgalaktionov.github.io/glyphstrike/bin/glyphstrike-amd64-darwin)
+
+Linux binaries: 
+[x64](https://vgalaktionov.github.io/glyphstrike/bin/glyphstrike-amd64-linux)
+
+Windows binaries: 
+[x64](https://vgalaktionov.github.io/glyphstrike/bin/glyphstrike-amd64.exe)
 
 ## Development
 
