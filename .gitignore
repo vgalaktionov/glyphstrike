@@ -1,8 +1,0 @@
-# logs
-**/*.log
-# profiling output
-*.out
-*.test
-# build output
-assets/main.wasm
-assets/renderer.js
